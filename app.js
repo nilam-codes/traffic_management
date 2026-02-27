@@ -4,7 +4,7 @@
 // ============================================================
 
 // --- CONFIG ---
-var BASE_URL = "";
+var BASE_URL = "http://localhost:5000";
 
 var TRAFFIC_LEVELS = {
     Low: { color: "#22c55e", bg: "rgba(34,197,94,0.15)", border: "#22c55e" },
