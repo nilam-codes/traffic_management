@@ -4,151 +4,132 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FlowGuard - City Traffic AI</title>
+  <title>FlowGuard — City Traffic Intelligence</title>
   <link rel="stylesheet" href="style.css" />
-  <style>
-    @keyframes float1 {
-
-      0%,
-      100% {
-        transform: translateY(0)
-      }
-
-      50% {
-        transform: translateY(-20px)
-      }
-    }
-
-    @keyframes float2 {
-
-      0%,
-      100% {
-        transform: translateY(0)
-      }
-
-      50% {
-        transform: translateY(-30px)
-      }
-    }
-
-    @keyframes float3 {
-
-      0%,
-      100% {
-        transform: translateY(0)
-      }
-
-      50% {
-        transform: translateY(-15px)
-      }
-    }
-
-    .particle {
-      position: absolute;
-      border-radius: 50%;
-      pointer-events: none;
-    }
-  </style>
 </head>
 
 <body class="auth-page">
 
-  <!-- Animated background -->
-  <div class="auth-bg"></div>
-  <div class="particle"
-    style="top:15%;left:8%;width:3px;height:3px;background:#f59e0b;opacity:.6;animation:float1 6s ease-in-out infinite">
-  </div>
-  <div class="particle"
-    style="top:35%;left:88%;width:4px;height:4px;background:#22d3ee;opacity:.4;animation:float2 8s ease-in-out infinite">
-  </div>
-  <div class="particle"
-    style="top:70%;left:12%;width:2px;height:2px;background:#f59e0b;opacity:.5;animation:float3 7s ease-in-out infinite">
-  </div>
-  <div class="particle"
-    style="top:80%;left:75%;width:5px;height:5px;background:#22d3ee;opacity:.25;animation:float1 9s ease-in-out infinite">
-  </div>
-  <div class="particle"
-    style="top:55%;left:50%;width:2px;height:2px;background:#f59e0b;opacity:.4;animation:float2 11s ease-in-out infinite">
-  </div>
+  <!-- ═══ Left Panel: Hero ═══ -->
+  <div class="auth-hero">
+    <div class="hero-content">
+      <span class="hero-icon">&#x2B21;</span>
+      <h1 class="hero-title">FLOW<span>GUARD</span></h1>
+      <p class="hero-subtitle">
+        AI-powered traffic prediction engine. Monitor congestion in real-time,
+        predict bottlenecks, and optimize city traffic flow.
+      </p>
 
-  <div class="auth-card">
-
-    <!-- Logo -->
-    <div class="auth-logo">
-      <span class="auth-logo-icon">&#x2B21;</span>
-      <div class="auth-logo-title">FLOWGUARD</div>
-      <span class="auth-logo-sub">Predicting &amp; Easing City Congestion</span>
-    </div>
-
-    <!-- Tabs -->
-    <div class="auth-tabs">
-      <button class="auth-tab active" id="tab-login" onclick="switchTab('login')">Sign In</button>
-      <button class="auth-tab" id="tab-register" onclick="switchTab('register')">Register</button>
-    </div>
-
-    <!-- Login Form -->
-    <div class="auth-form active" id="form-login">
-      <form id="loginForm" novalidate>
-        <div class="form-group">
-          <label class="form-label">Email</label>
-          <input type="email" class="form-control" id="loginEmail" placeholder="Enter your email"
-            autocomplete="email" />
+      <div class="hero-features">
+        <div class="hero-feature">
+          <div class="hero-feature-icon">&#128202;</div>
+          <div class="hero-feature-text">
+            <strong>Real-Time Analytics</strong> — Live dashboards with heatmaps, hourly trends &amp; charts
+          </div>
         </div>
-        <div class="form-group">
-          <label class="form-label">Password</label>
-          <input type="password" class="form-control" id="loginPassword"
-            placeholder="&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;" autocomplete="current-password" />
+        <div class="hero-feature">
+          <div class="hero-feature-icon">&#129504;</div>
+          <div class="hero-feature-text">
+            <strong>ML Predictions</strong> — Random Forest model trained on historical congestion data
+          </div>
         </div>
-        <button type="submit" class="btn btn-primary w-full" style="margin-top:4px">
-          &#9672; Sign In to FlowGuard
-        </button>
-      </form>
-      <div style="text-align:center;margin-top:16px;font-size:12px;color:var(--text-muted)">
-        Demo: any email + password will work if backend is offline
+        <div class="hero-feature">
+          <div class="hero-feature-icon">&#9888;&#65039;</div>
+          <div class="hero-feature-text">
+            <strong>Smart Alerts</strong> — Instant notifications when roads hit critical capacity
+          </div>
+        </div>
+        <div class="hero-feature">
+          <div class="hero-feature-icon">&#128736;&#65039;</div>
+          <div class="hero-feature-text">
+            <strong>Road Comparison</strong> — Side-by-side analytics to optimize traffic flow
+          </div>
+        </div>
       </div>
     </div>
+  </div>
 
-    <!-- Register Form -->
-    <div class="auth-form" id="form-register">
-      <form id="registerForm" novalidate>
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">Full Name <span style="color:var(--accent)">*</span></label>
-            <input type="text" class="form-control" id="regName" placeholder="Your full name" />
-          </div>
-          <div class="form-group">
-            <label class="form-label">Email <span style="color:var(--accent)">*</span></label>
-            <input type="email" class="form-control" id="regEmail" placeholder="your@email.com" />
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Role</label>
-          <select class="form-control" id="regRole">
-            <option value="admin">Administrator</option>
-            <option value="Traffic Analyst">Traffic Analyst</option>
-            <option value="City Planner">City Planner</option>
-            <option value="Traffic Officer">Traffic Officer</option>
-          </select>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">Password <span style="color:var(--accent)">*</span></label>
-            <input type="password" class="form-control" id="regPassword" placeholder="Min 6 chars" />
-          </div>
-          <div class="form-group">
-            <label class="form-label">Confirm <span style="color:var(--accent)">*</span></label>
-            <input type="password" class="form-control" id="regConfirm" placeholder="Repeat" />
-          </div>
-        </div>
-        <button type="submit" class="btn btn-primary w-full" style="margin-top:4px">
-          &#9673; Create Account
-        </button>
-      </form>
-    </div>
+  <!-- ═══ Right Panel: Auth Forms ═══ -->
+  <div class="auth-form-panel">
+    <div class="auth-card">
 
-    <div class="auth-footer">
-      <span id="authClock" style="color:var(--accent)"></span>
-      &nbsp;&middot;&nbsp; FlowGuard &copy; 2025 &nbsp;&middot;&nbsp; City Traffic Intelligence
+      <div class="auth-logo">
+        <div class="auth-logo-title">SIGN IN</div>
+        <span class="auth-logo-sub">Access your traffic intelligence dashboard</span>
+      </div>
+
+      <!-- Tabs -->
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-login" onclick="switchTab('login')">Sign In</button>
+        <button class="auth-tab" id="tab-register" onclick="switchTab('register')">Register</button>
+      </div>
+
+      <!-- ─ Login Form ─ -->
+      <div class="auth-form active" id="form-login">
+        <form id="loginForm" novalidate>
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input type="email" class="form-control" id="loginEmail" placeholder="you@example.com"
+              autocomplete="email" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input type="password" class="form-control" id="loginPassword" placeholder="Enter your password"
+              autocomplete="current-password" />
+          </div>
+          <button type="submit" class="btn btn-primary w-full" style="margin-top:6px;padding:13px">
+            Sign In &rarr;
+          </button>
+        </form>
+        <div class="auth-footer" style="margin-top:18px">
+          Works in demo mode if backend is offline
+        </div>
+      </div>
+
+      <!-- ─ Register Form ─ -->
+      <div class="auth-form" id="form-register">
+        <form id="registerForm" novalidate>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Full Name <span style="color:var(--accent)">*</span></label>
+              <input type="text" class="form-control" id="regName" placeholder="John Doe" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email <span style="color:var(--accent)">*</span></label>
+              <input type="email" class="form-control" id="regEmail" placeholder="john@city.gov" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Role</label>
+            <select class="form-control" id="regRole">
+              <option value="admin">Administrator</option>
+              <option value="Traffic Analyst">Traffic Analyst</option>
+              <option value="City Planner">City Planner</option>
+              <option value="Traffic Officer">Traffic Officer</option>
+            </select>
+            <div class="role-description" id="roleDesc">Full system access — manage users, roads, and all analytics
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Password <span style="color:var(--accent)">*</span></label>
+              <input type="password" class="form-control" id="regPassword" placeholder="Min 6 chars" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Confirm <span style="color:var(--accent)">*</span></label>
+              <input type="password" class="form-control" id="regConfirm" placeholder="Repeat" />
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary w-full" style="margin-top:6px;padding:13px">
+            Create Account &rarr;
+          </button>
+        </form>
+      </div>
+
+      <div class="auth-footer" style="margin-top:24px">
+        <span id="authClock" style="color:var(--accent)"></span>
+        &nbsp;&middot;&nbsp; FlowGuard &copy; 2025
+      </div>
     </div>
   </div>
 

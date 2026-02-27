@@ -4,232 +4,133 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FlowGuard — Setup Your Profile</title>
+  <title>FlowGuard — Select Your City</title>
   <link rel="stylesheet" href="style.css" />
-  <style>
-    .theme-option {
-      padding: 14px;
-      border: 2px solid var(--border);
-      border-radius: var(--radius);
-      cursor: pointer;
-      text-align: center;
-      transition: all var(--transition);
-      background: var(--bg-surface);
-    }
-
-    .theme-option:hover {
-      border-color: var(--border-light);
-    }
-
-    .theme-option.selected {
-      border-color: var(--accent);
-      background: var(--accent-dim);
-    }
-
-    .theme-icon {
-      font-size: 24px;
-      display: block;
-      margin-bottom: 6px;
-    }
-
-    .theme-label {
-      font-size: 12px;
-      font-family: var(--font-mono);
-      color: var(--text-secondary);
-    }
-
-    .level-chip {
-      padding: 8px 16px;
-      border: 1px solid var(--border-light);
-      border-radius: 100px;
-      cursor: pointer;
-      font-size: 12px;
-      font-family: var(--font-mono);
-      color: var(--text-secondary);
-      transition: all var(--transition);
-      background: transparent;
-    }
-
-    .level-chip:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-    }
-
-    .level-chip.selected {
-      background: var(--accent-dim);
-      border-color: var(--accent);
-      color: var(--accent);
-    }
-
-    .ob-step {
-      display: none;
-    }
-
-    .ob-step.active {
-      display: block;
-      animation: fadeUp 0.3s ease;
-    }
-
-    .welcome-icon {
-      font-size: 64px;
-      display: block;
-      text-align: center;
-      color: var(--accent);
-      filter: drop-shadow(0 0 20px var(--accent-glow));
-      margin-bottom: 20px;
-    }
-  </style>
 </head>
 
 <body class="onboarding-page">
 
   <div class="onboarding-card">
 
-    <!-- Step Progress Dots -->
-    <div class="onboarding-step-indicator">
-      <div class="step-dot active"></div>
-      <div class="step-dot"></div>
-      <div class="step-dot"></div>
-    </div>
-
-    <!-- ─ Step 1: Welcome + Name ─────────────────────────── -->
-    <div class="ob-step" id="step-1">
-      <span class="welcome-icon">⬡</span>
-      <div class="onboarding-header">
-        <div class="onboarding-title">Welcome to FlowGuard</div>
-        <div class="onboarding-subtitle">Let's set up your profile so we can personalize your experience.</div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Your Display Name</label>
-        <input type="text" class="form-control" id="obDisplayName" placeholder="How should we call you?" />
-      </div>
-      <div class="form-group">
-        <label class="form-label">City You're Monitoring</label>
-        <input type="text" class="form-control" id="obCity" placeholder="e.g. Bangalore, Mumbai, Delhi" />
-      </div>
-      <div class="form-group">
-        <label class="form-label">Your Role</label>
-        <select class="form-control" id="obRole">
-          <option value="Traffic Analyst">Traffic Analyst</option>
-          <option value="City Planner">City Planner</option>
-          <option value="Traffic Officer">Traffic Officer</option>
-          <option value="Administrator">Administrator</option>
-          <option value="Researcher">Researcher</option>
-        </select>
+    <!-- Logo -->
+    <div style="text-align:center;margin-bottom:28px">
+      <span
+        style="font-size:56px;color:var(--accent);filter:drop-shadow(0 0 20px var(--accent-glow));display:block;margin-bottom:12px">&#x2B21;</span>
+      <div class="onboarding-title">Welcome to FlowGuard</div>
+      <div class="onboarding-subtitle" style="margin-top:6px">
+        Select the city you want to monitor and we'll set up your dashboard.
       </div>
     </div>
 
-    <!-- ─ Step 2: Preferences ────────────────────────────── -->
-    <div class="ob-step" id="step-2">
-      <div class="onboarding-header">
-        <div class="onboarding-title">Your Preferences</div>
-        <div class="onboarding-subtitle">Customize your FlowGuard experience.</div>
-      </div>
-
-      <div class="form-group">
-        <label class="form-label">Interface Theme</label>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:8px">
-          <div class="theme-option selected" data-theme="dark" onclick="selectTheme(this)">
-            <span class="theme-icon">🌑</span>
-            <span class="theme-label">Dark</span>
-          </div>
-          <div class="theme-option" data-theme="midnight" onclick="selectTheme(this)">
-            <span class="theme-icon">🌌</span>
-            <span class="theme-label">Midnight</span>
-          </div>
-          <div class="theme-option" data-theme="amber" onclick="selectTheme(this)">
-            <span class="theme-icon">🟡</span>
-            <span class="theme-label">Amber</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label class="form-label">Traffic Expertise Level</label>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
-          <div class="level-chip" onclick="selectLevel(this)">Beginner</div>
-          <div class="level-chip" onclick="selectLevel(this)">Intermediate</div>
-          <div class="level-chip" onclick="selectLevel(this)">Expert</div>
-          <div class="level-chip" onclick="selectLevel(this)">City Planner</div>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label class="form-label">Alert Notifications</label>
-        <label
-          style="display:flex;align-items:center;gap:12px;cursor:pointer;padding:12px;background:var(--bg-surface);border-radius:var(--radius);border:1px solid var(--border)">
-          <input type="checkbox" id="obNotifications" checked
-            style="accent-color:var(--accent);width:16px;height:16px" />
-          <div>
-            <div style="font-size:13px;font-weight:500">Enable Critical Alerts</div>
-            <div style="font-size:11px;color:var(--text-muted)">Get notified when congestion hits Critical level</div>
-          </div>
-        </label>
-      </div>
+    <!-- City Input -->
+    <div class="form-group">
+      <label class="form-label">Your City <span style="color:var(--accent)">*</span></label>
+      <input type="text" class="form-control" id="obCity" placeholder="e.g. Bangalore, Mumbai, Delhi, Hyderabad"
+        style="font-size:16px;padding:14px 16px" />
+      <div class="form-hint">This determines which roads and traffic data you see</div>
     </div>
 
-    <!-- ─ Step 3: All Set ────────────────────────────────── -->
-    <div class="ob-step" id="step-3">
-      <div style="text-align:center;padding:20px 0">
-        <span
-          style="font-size:72px;display:block;margin-bottom:20px;animation:float1 3s ease-in-out infinite">🏙️</span>
-        <div class="onboarding-title" style="font-size:28px;margin-bottom:12px">You're All Set!</div>
-        <div class="onboarding-subtitle" style="font-size:14px;line-height:1.8;max-width:380px;margin:0 auto">
-          FlowGuard is ready to help you monitor, predict, and manage city traffic congestion.
-          Your dashboard awaits with real-time analytics.
-        </div>
-      </div>
+    <!-- Quick City Chips -->
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:28px">
+      <button class="city-chip" onclick="selectCity('Bangalore')">Bangalore</button>
+      <button class="city-chip" onclick="selectCity('Mumbai')">Mumbai</button>
+      <button class="city-chip" onclick="selectCity('Delhi')">Delhi</button>
+      <button class="city-chip" onclick="selectCity('Hyderabad')">Hyderabad</button>
+      <button class="city-chip" onclick="selectCity('Chennai')">Chennai</button>
+      <button class="city-chip" onclick="selectCity('Pune')">Pune</button>
+    </div>
 
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:24px">
-        <div
-          style="padding:16px;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius);text-align:center">
-          <div style="font-size:24px;margin-bottom:6px">⬡</div>
-          <div style="font-size:12px;font-family:var(--font-mono);color:var(--text-muted)">Live Dashboard</div>
+    <!-- What You Get -->
+    <div style="margin-bottom:28px">
+      <div
+        style="font-family:var(--font-mono);font-size:10px;letter-spacing:1.5px;color:var(--text-muted);margin-bottom:12px">
+        WHAT YOU'LL GET</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="feature-mini">
+          <span>&#x2B21;</span> Live Dashboard
         </div>
-        <div
-          style="padding:16px;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius);text-align:center">
-          <div style="font-size:24px;margin-bottom:6px">◈</div>
-          <div style="font-size:12px;font-family:var(--font-mono);color:var(--text-muted)">ML Predictions</div>
+        <div class="feature-mini">
+          <span>&#x25C8;</span> ML Predictions
         </div>
-        <div
-          style="padding:16px;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius);text-align:center">
-          <div style="font-size:24px;margin-bottom:6px">◬</div>
-          <div style="font-size:12px;font-family:var(--font-mono);color:var(--text-muted)">Smart Alerts</div>
+        <div class="feature-mini">
+          <span>&#x25EC;</span> Smart Alerts
         </div>
-        <div
-          style="padding:16px;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius);text-align:center">
-          <div style="font-size:24px;margin-bottom:6px">◧</div>
-          <div style="font-size:12px;font-family:var(--font-mono);color:var(--text-muted)">Road Compare</div>
+        <div class="feature-mini">
+          <span>&#x25A7;</span> Road Comparison
         </div>
       </div>
     </div>
 
-    <!-- Navigation Buttons -->
-    <div
-      style="display:flex;justify-content:space-between;align-items:center;margin-top:32px;padding-top:20px;border-top:1px solid var(--border)">
-      <button class="btn btn-ghost" id="prevBtn" style="display:none" onclick="prevStep()">← Back</button>
-      <div></div>
-      <button class="btn btn-primary" id="nextBtn" onclick="nextStep()">Continue →</button>
-    </div>
+    <!-- Submit -->
+    <button class="btn btn-primary w-full btn-lg" id="startBtn" onclick="startDashboard()">
+      Launch Dashboard &rarr;
+    </button>
   </div>
 
   <style>
-    @keyframes float1 {
+    .city-chip {
+      padding: 7px 18px;
+      border-radius: 100px;
+      border: 1px solid var(--border-light);
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 13px;
+      font-family: var(--font-body);
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
 
-      0%,
-      100% {
-        transform: translateY(0)
-      }
+    .city-chip:hover,
+    .city-chip.selected {
+      background: var(--accent-dim);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
 
-      50% {
-        transform: translateY(-12px)
-      }
+    .feature-mini {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .feature-mini span {
+      color: var(--accent);
+      font-size: 16px;
     }
   </style>
 
   <script src="config.js"></script>
   <script src="common.js"></script>
-  <script src="onboarding.js"></script>
+  <script>
+    // Pre-fill city if already set
+    var saved = localStorage.getItem("city");
+    if (saved) document.getElementById("obCity").value = saved;
+
+    function selectCity(name) {
+      document.getElementById("obCity").value = name;
+      document.querySelectorAll(".city-chip").forEach(function (c) {
+        c.classList.toggle("selected", c.textContent === name);
+      });
+    }
+
+    function startDashboard() {
+      var city = document.getElementById("obCity").value.trim();
+      if (!city) {
+        showError("Please enter or select a city.");
+        return;
+      }
+      localStorage.setItem("city", city);
+      localStorage.setItem("onboarded", "1");
+      showSuccess("Welcome! Redirecting to dashboard...");
+      setTimeout(function () { window.location.href = "dashboard.html"; }, 600);
+    }
+  </script>
 </body>
 
 </html>

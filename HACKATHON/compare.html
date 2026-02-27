@@ -11,23 +11,16 @@
 
 <body>
     <div class="app-shell">
+        <nav id="topNavbar"></nav>
 
-        <!-- Sidebar -->
-        <div id="sidebar"></div>
-
-        <!-- Topbar -->
-        <header class="topbar">
-            <div class="topbar-left">
-                <div id="pageTitle"></div>
-                <div id="pageSubtitle"></div>
-            </div>
-            <div class="topbar-right">
+        <main class="main-content">
+            <div class="page-header">
+                <div class="page-header-left">
+                    <div id="pageTitle"></div>
+                    <div id="pageSubtitle"></div>
+                </div>
                 <button class="btn btn-sm btn-ghost" id="resetCompare">&#8634; Reset</button>
             </div>
-        </header>
-
-        <!-- Main Content -->
-        <main class="main-content">
 
             <!-- Road Selectors -->
             <div class="compare-header">
@@ -55,14 +48,12 @@
                 <div class="empty-state">
                     <span class="empty-icon">&#9830;</span>
                     <h3>Select Two Roads</h3>
-                    <p>Choose two different roads above and click "Run Comparison" to see side-by-side analytics</p>
+                    <p>Choose two different roads and click "Run Comparison" to see side-by-side analytics</p>
                 </div>
             </div>
 
-            <!-- Results (hidden initially) -->
+            <!-- Results -->
             <div id="compareResults" style="display:none">
-
-                <!-- Names -->
                 <div class="dashboard-grid" style="margin-bottom:12px">
                     <div style="text-align:center">
                         <div class="section-title" id="cmpName1">Road 1</div>
@@ -71,41 +62,29 @@
                         <div class="section-title" id="cmpName2">Road 2</div>
                     </div>
                 </div>
-
-                <!-- Metric Blocks -->
                 <div class="compare-stats-grid">
                     <div class="compare-stat-block" id="cmpBlock1"></div>
                     <div class="compare-stat-block" id="cmpBlock2"></div>
                 </div>
-
-                <!-- Hourly Comparison Chart -->
                 <div class="card" style="margin-bottom:20px">
                     <div class="card-header">
                         <div>
-                            <div class="card-title">Hourly Congestion Comparison</div>
-                            <div class="card-subtitle">24-hour vehicle count comparison</div>
+                            <div class="card-title">Hourly Comparison</div>
+                            <div class="card-subtitle">24-hour vehicle count</div>
                         </div>
                     </div>
-                    <div class="chart-wrap" style="height:300px">
-                        <canvas id="compareChart"></canvas>
-                    </div>
+                    <div class="chart-wrap" style="height:300px"><canvas id="compareChart"></canvas></div>
                 </div>
-
-                <!-- Distribution Comparison Chart -->
                 <div class="card">
                     <div class="card-header">
                         <div>
-                            <div class="card-title">Traffic Level Distribution</div>
-                            <div class="card-subtitle">Distribution of congestion levels</div>
+                            <div class="card-title">Level Distribution</div>
+                            <div class="card-subtitle">Congestion level breakdown</div>
                         </div>
                     </div>
-                    <div class="chart-wrap" style="height:260px">
-                        <canvas id="distCompareChart"></canvas>
-                    </div>
+                    <div class="chart-wrap" style="height:260px"><canvas id="distCompareChart"></canvas></div>
                 </div>
-
             </div>
-
         </main>
     </div>
 

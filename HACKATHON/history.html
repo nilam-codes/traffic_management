@@ -11,31 +11,23 @@
 
 <body>
   <div class="app-shell">
+    <nav id="topNavbar"></nav>
 
-    <!-- Sidebar -->
-    <div id="sidebar"></div>
-
-    <!-- Topbar -->
-    <header class="topbar">
-      <div class="topbar-left">
-        <div id="pageTitle"></div>
-        <div id="pageSubtitle"></div>
-      </div>
-      <div class="topbar-right">
+    <main class="main-content">
+      <div class="page-header">
+        <div class="page-header-left">
+          <div id="pageTitle"></div>
+          <div id="pageSubtitle"></div>
+        </div>
         <button class="btn btn-sm btn-ghost" id="exportBtn">&#128229; Export CSV</button>
       </div>
-    </header>
-
-    <!-- Main Content -->
-    <main class="main-content">
 
       <!-- Stats Row -->
       <div class="stat-grid" style="margin-bottom:20px">
         <div class="stat-card" style="padding:16px">
           <div class="stat-label">Total Records</div>
-          <div
-            style="font-family:var(--font-display);font-size:32px;font-weight:800;color:var(--text-primary);margin-top:4px"
-            id="histTotal">-</div>
+          <div style="font-family:var(--font-display);font-size:32px;font-weight:800;margin-top:4px" id="histTotal">-
+          </div>
         </div>
         <div class="stat-card" style="padding:16px">
           <div class="stat-label">Avg Vehicles</div>
@@ -62,9 +54,7 @@
             <div class="card-subtitle">Average vehicle count over time</div>
           </div>
         </div>
-        <div class="chart-wrap" style="height:200px">
-          <canvas id="historyChart"></canvas>
-        </div>
+        <div class="chart-wrap" style="height:200px"><canvas id="historyChart"></canvas></div>
       </div>
 
       <!-- Filters -->
@@ -83,7 +73,7 @@
           <div class="form-group">
             <label class="form-label">Level</label>
             <select class="form-control" id="filterLevel">
-              <option value="">All Levels</option>
+              <option value="">All</option>
               <option value="Low">Low</option>
               <option value="Medium">Medium</option>
               <option value="High">High</option>
@@ -118,7 +108,6 @@
           </table>
         </div>
       </div>
-
     </main>
   </div>
 

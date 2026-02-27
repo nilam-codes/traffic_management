@@ -11,29 +11,22 @@
 
 <body>
     <div class="app-shell">
+        <nav id="topNavbar"></nav>
 
-        <!-- Sidebar -->
-        <div id="sidebar"></div>
-
-        <!-- Topbar -->
-        <header class="topbar">
-            <div class="topbar-left">
-                <div id="pageTitle"></div>
-                <div id="pageSubtitle"></div>
-            </div>
-            <div class="topbar-right">
+        <main class="main-content">
+            <div class="page-header">
+                <div class="page-header-left">
+                    <div id="pageTitle"></div>
+                    <div id="pageSubtitle"></div>
+                </div>
                 <button class="btn btn-sm btn-ghost" id="refreshAlerts">&#8635; Refresh</button>
             </div>
-        </header>
-
-        <!-- Main Content -->
-        <main class="main-content">
 
             <!-- Stats Row -->
             <div class="stat-grid" style="margin-bottom:20px">
                 <div class="stat-card" style="padding:16px">
                     <div class="stat-label">Total Alerts</div>
-                    <div style="font-family:var(--font-display);font-size:32px;font-weight:800;color:var(--text-primary);margin-top:4px"
+                    <div style="font-family:var(--font-display);font-size:32px;font-weight:800;margin-top:4px"
                         id="alertTotal">-</div>
                 </div>
                 <div class="stat-card" style="padding:16px">
@@ -54,42 +47,33 @@
             </div>
 
             <div class="dashboard-grid">
-
                 <!-- Alert Feed -->
                 <div>
-                    <!-- Search & Filters -->
                     <div class="card" style="margin-bottom:16px">
                         <input type="text" class="form-control" id="alertSearch"
-                            placeholder="&#128269; Search alerts by road, area, or level..."
-                            style="margin-bottom:12px" />
+                            placeholder="&#128269; Search alerts..." style="margin-bottom:12px" />
                         <div class="alerts-filters">
                             <button class="filter-chip active" data-filter="All">All</button>
                             <button class="filter-chip" data-filter="Critical">&#9632; Critical</button>
                             <button class="filter-chip" data-filter="High">&#9650; High</button>
                         </div>
                     </div>
-
-                    <!-- Alert Cards List -->
                     <div id="alertsContainer"></div>
                 </div>
 
                 <!-- Distribution Chart -->
                 <div>
-                    <div class="card" style="position:sticky;top:calc(var(--topbar-h) + 20px)">
+                    <div class="card" style="position:sticky;top:calc(var(--navbar-h) + 20px)">
                         <div class="card-header">
                             <div>
                                 <div class="card-title">Alert Distribution</div>
                                 <div class="card-subtitle">Critical vs High breakdown</div>
                             </div>
                         </div>
-                        <div class="chart-wrap" style="height:280px">
-                            <canvas id="alertChart"></canvas>
-                        </div>
+                        <div class="chart-wrap" style="height:280px"><canvas id="alertChart"></canvas></div>
                     </div>
                 </div>
-
             </div>
-
         </main>
     </div>
 

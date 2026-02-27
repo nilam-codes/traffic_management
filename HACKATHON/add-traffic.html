@@ -10,119 +10,100 @@
 
 <body>
     <div class="app-shell">
+        <nav id="topNavbar"></nav>
 
-        <!-- Sidebar -->
-        <div id="sidebar"></div>
-
-        <!-- Topbar -->
-        <header class="topbar">
-            <div class="topbar-left">
-                <div id="pageTitle"></div>
-                <div id="pageSubtitle"></div>
-            </div>
-            <div class="topbar-right">
-                <div class="status-indicator">
-                    <div class="status-dot"></div>
-                    <span>INPUT MODE</span>
+        <main class="main-content">
+            <div class="page-header">
+                <div class="page-header-left">
+                    <div id="pageTitle"></div>
+                    <div id="pageSubtitle"></div>
+                </div>
+                <div
+                    style="display:flex;align-items:center;gap:6px;font-size:11px;font-family:var(--font-mono);color:var(--accent);letter-spacing:0.5px">
+                    <div
+                        style="width:7px;height:7px;border-radius:50%;background:var(--accent);animation:blink 2s ease-in-out infinite">
+                    </div>
+                    INPUT MODE
                 </div>
             </div>
-        </header>
 
-        <!-- Main Content -->
-        <main class="main-content">
             <div class="add-traffic-layout">
-
                 <!-- Form Panel -->
                 <div>
                     <div class="card">
                         <div class="card-header">
                             <div>
                                 <div class="card-title">Submit Traffic Observation</div>
-                                <div class="card-subtitle">Record a new traffic data entry into the system</div>
+                                <div class="card-subtitle">Record a new traffic data entry</div>
                             </div>
                         </div>
-
                         <form id="trafficForm" novalidate>
-                            <!-- Road Selection -->
                             <div class="form-group">
                                 <label class="form-label">Road <span style="color:var(--accent)">*</span></label>
                                 <select class="form-control" id="addRoad">
                                     <option value="">Loading roads...</option>
                                 </select>
                             </div>
-
-                            <!-- Date & Hour -->
                             <div class="form-row">
                                 <div class="form-group">
                                     <label class="form-label">Date <span style="color:var(--accent)">*</span></label>
                                     <input type="date" class="form-control" id="addDate" />
                                 </div>
                                 <div class="form-group">
-                                    <label class="form-label">Hour of Day <span
-                                            style="color:var(--accent)">*</span></label>
+                                    <label class="form-label">Hour <span style="color:var(--accent)">*</span></label>
                                     <select class="form-control" id="addHour">
-                                        <option value="">Select hour...</option>
-                                        <option value="0">0:00 - Midnight</option>
-                                        <option value="1">1:00 AM</option>
-                                        <option value="2">2:00 AM</option>
-                                        <option value="3">3:00 AM</option>
-                                        <option value="4">4:00 AM</option>
-                                        <option value="5">5:00 AM</option>
-                                        <option value="6">6:00 AM</option>
-                                        <option value="7">7:00 AM</option>
-                                        <option value="8">8:00 AM - Morning Rush</option>
-                                        <option value="9">9:00 AM</option>
-                                        <option value="10">10:00 AM</option>
-                                        <option value="11">11:00 AM</option>
-                                        <option value="12">12:00 PM - Noon</option>
-                                        <option value="13">1:00 PM</option>
-                                        <option value="14">2:00 PM</option>
-                                        <option value="15">3:00 PM</option>
-                                        <option value="16">4:00 PM</option>
-                                        <option value="17">5:00 PM - Evening Rush</option>
-                                        <option value="18">6:00 PM</option>
-                                        <option value="19">7:00 PM</option>
-                                        <option value="20">8:00 PM</option>
-                                        <option value="21">9:00 PM</option>
-                                        <option value="22">10:00 PM</option>
-                                        <option value="23">11:00 PM</option>
+                                        <option value="">Select...</option>
+                                        <option value="0">0:00</option>
+                                        <option value="1">1:00</option>
+                                        <option value="2">2:00</option>
+                                        <option value="3">3:00</option>
+                                        <option value="4">4:00</option>
+                                        <option value="5">5:00</option>
+                                        <option value="6">6:00</option>
+                                        <option value="7">7:00</option>
+                                        <option value="8">8:00 Rush</option>
+                                        <option value="9">9:00</option>
+                                        <option value="10">10:00</option>
+                                        <option value="11">11:00</option>
+                                        <option value="12">12:00</option>
+                                        <option value="13">13:00</option>
+                                        <option value="14">14:00</option>
+                                        <option value="15">15:00</option>
+                                        <option value="16">16:00</option>
+                                        <option value="17">17:00 Rush</option>
+                                        <option value="18">18:00</option>
+                                        <option value="19">19:00</option>
+                                        <option value="20">20:00</option>
+                                        <option value="21">21:00</option>
+                                        <option value="22">22:00</option>
+                                        <option value="23">23:00</option>
                                     </select>
                                 </div>
                             </div>
-
-                            <!-- Vehicle Count (replaces level picker — backend auto-calculates level) -->
                             <div class="form-group">
                                 <label class="form-label">Vehicle Count <span
                                         style="color:var(--accent)">*</span></label>
-                                <input type="number" class="form-control" id="addVehicles"
-                                    placeholder="e.g. 850 — congestion level auto-calculated from capacity" min="0" />
-                                <div class="form-hint">The system auto-calculates congestion level based on road
-                                    capacity</div>
+                                <input type="number" class="form-control" id="addVehicles" placeholder="e.g. 850"
+                                    min="0" />
+                                <div class="form-hint">Congestion level is auto-calculated from road capacity</div>
                             </div>
-
-                            <!-- Weather -->
                             <div class="form-group">
-                                <label class="form-label">Weather Condition</label>
+                                <label class="form-label">Weather</label>
                                 <select class="form-control" id="addWeather">
                                     <option value="Clear">&#9728; Clear</option>
                                     <option value="Rain">&#127783; Rain</option>
                                     <option value="Fog">&#127787; Fog</option>
                                 </select>
                             </div>
-
-                            <!-- Holiday Toggle -->
                             <div class="form-group">
                                 <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
                                     <input type="checkbox" id="addHoliday"
                                         style="accent-color:var(--accent);width:15px;height:15px" />
                                     <div>
                                         <div class="form-label" style="margin:0">Public Holiday</div>
-                                        <div class="form-hint">Check if this observation was on a public holiday</div>
                                     </div>
                                 </label>
                             </div>
-
-                            <!-- Submit Buttons -->
                             <div style="display:flex;gap:10px;margin-top:8px">
                                 <button type="submit" class="btn btn-primary" style="flex:1">&#9673; Submit
                                     Record</button>
@@ -131,47 +112,41 @@
                         </form>
                     </div>
 
-                    <!-- Live Preview Card -->
+                    <!-- Live Preview -->
                     <div class="card" style="margin-top:16px">
                         <div class="card-title" style="margin-bottom:12px;font-size:12px">LIVE PREVIEW</div>
                         <div style="display:flex;flex-direction:column;gap:8px;font-size:12px">
-                            <div style="display:flex;justify-content:space-between">
-                                <span class="text-muted">Road</span>
-                                <span class="text-mono" style="font-size:11px" id="prevRoad">-</span>
-                            </div>
-                            <div style="display:flex;justify-content:space-between">
-                                <span class="text-muted">Date</span>
-                                <span class="text-mono" style="font-size:11px" id="prevDate">-</span>
-                            </div>
-                            <div style="display:flex;justify-content:space-between">
-                                <span class="text-muted">Hour</span>
-                                <span class="text-mono" style="font-size:11px" id="prevHour">-</span>
-                            </div>
-                            <div style="display:flex;justify-content:space-between">
-                                <span class="text-muted">Vehicles</span>
-                                <span class="text-mono" style="font-size:11px" id="prevLevel">-</span>
-                            </div>
-                            <div style="display:flex;justify-content:space-between">
-                                <span class="text-muted">Weather</span>
-                                <span class="text-mono" style="font-size:11px" id="prevWeather">-</span>
-                            </div>
+                            <div style="display:flex;justify-content:space-between"><span
+                                    class="text-muted">Road</span><span class="text-mono" style="font-size:11px"
+                                    id="prevRoad">-</span></div>
+                            <div style="display:flex;justify-content:space-between"><span
+                                    class="text-muted">Date</span><span class="text-mono" style="font-size:11px"
+                                    id="prevDate">-</span></div>
+                            <div style="display:flex;justify-content:space-between"><span
+                                    class="text-muted">Hour</span><span class="text-mono" style="font-size:11px"
+                                    id="prevHour">-</span></div>
+                            <div style="display:flex;justify-content:space-between"><span
+                                    class="text-muted">Vehicles</span><span class="text-mono" style="font-size:11px"
+                                    id="prevLevel">-</span></div>
+                            <div style="display:flex;justify-content:space-between"><span
+                                    class="text-muted">Weather</span><span class="text-mono" style="font-size:11px"
+                                    id="prevWeather">-</span></div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Recent Submissions Panel -->
+                <!-- Recent Submissions -->
                 <div>
                     <div class="card">
                         <div class="card-header">
                             <div>
                                 <div class="card-title">Recent Submissions</div>
-                                <div class="card-subtitle">Your last submitted traffic records</div>
+                                <div class="card-subtitle">Your last submitted records</div>
                             </div>
                         </div>
                         <div id="recentList" class="recent-submissions"></div>
                     </div>
                 </div>
-
             </div>
         </main>
     </div>

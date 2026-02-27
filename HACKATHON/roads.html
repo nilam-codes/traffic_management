@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FlowGuard - Road Network</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+    <div class="app-shell">
+        <nav id="topNavbar"></nav>
+
+        <main class="main-content">
+            <div class="page-header">
+                <div class="page-header-left">
+                    <div id="pageTitle"></div>
+                    <div id="pageSubtitle"></div>
+                </div>
+                <div
+                    style="display:flex;align-items:center;gap:6px;font-size:11px;font-family:var(--font-mono);color:var(--green);letter-spacing:0.5px">
+                    <div
+                        style="width:7px;height:7px;border-radius:50%;background:var(--green);animation:blink 2s ease-in-out infinite">
+                    </div>
+                    DATABASE
+                </div>
+            </div>
+
+            <!-- Stats Row -->
+            <div class="stat-grid" style="margin-bottom:20px">
+                <div class="stat-card" style="padding:16px">
+                    <div class="stat-label">Total Roads</div>
+                    <div style="font-family:var(--font-display);font-size:32px;font-weight:800;margin-top:4px"
+                        id="roadTotal">-</div>
+                </div>
+                <div class="stat-card" style="padding:16px">
+                    <div class="stat-label">Highways</div>
+                    <div style="font-family:var(--font-display);font-size:32px;font-weight:800;color:var(--cyan);margin-top:4px"
+                        id="roadHighways">-</div>
+                </div>
+                <div class="stat-card" style="padding:16px">
+                    <div class="stat-label">Arterial Roads</div>
+                    <div style="font-family:var(--font-display);font-size:32px;font-weight:800;color:var(--accent);margin-top:4px"
+                        id="roadArterial">-</div>
+                </div>
+                <div class="stat-card" style="padding:16px">
+                    <div class="stat-label">Total Capacity</div>
+                    <div
+                        style="font-family:var(--font-display);font-size:28px;font-weight:800;color:var(--green);margin-top:4px">
+                        <span id="roadKm">-</span> <span
+                            style="font-size:14px;font-weight:400;color:var(--text-muted)">units</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="roads-layout">
+                <!-- Road List -->
+                <div>
+                    <div class="card" style="margin-bottom:16px;padding:16px">
+                        <input type="text" class="form-control" id="roadSearch"
+                            placeholder="&#128269; Search roads by name, area, or city..." />
+                    </div>
+                    <div id="roadsList"></div>
+                </div>
+
+                <!-- Add Road Form -->
+                <div>
+                    <div class="card" style="position:sticky;top:calc(var(--navbar-h) + 20px)">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">Add New Road</div>
+                                <div class="card-subtitle">Register a new road in the network</div>
+                            </div>
+                        </div>
+                        <form id="addRoadForm" novalidate>
+                            <div class="form-group">
+                                <label class="form-label">Road Name <span style="color:var(--accent)">*</span></label>
+                                <input type="text" class="form-control" id="newRoadName" placeholder="e.g. MG Road" />
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Area / Location</label>
+                                <input type="text" class="form-control" id="newRoadLocation"
+                                    placeholder="e.g. Central Bangalore" />
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Vehicle Capacity <span
+                                        style="color:var(--accent)">*</span></label>
+                                <input type="number" class="form-control" id="newRoadCapacity" placeholder="e.g. 1200"
+                                    min="100" />
+                                <div class="form-hint">Max vehicles before congestion</div>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-full" style="margin-top:8px">&#9707; Add
+                                Road</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="common.js"></script>
+    <script src="roads.js"></script>
+</body>
+
+</html>

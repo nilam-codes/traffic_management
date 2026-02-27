@@ -10,33 +10,30 @@
 </head>
 
 <body>
-
   <div class="app-shell">
 
-    <!-- Sidebar (built by common.js) -->
-    <div id="sidebar"></div>
-
-    <!-- Topbar -->
-    <header class="topbar">
-      <div class="topbar-left">
-        <div id="pageTitle"></div>
-        <div id="pageSubtitle"></div>
-      </div>
-      <div class="topbar-right">
-        <button class="btn btn-sm btn-ghost city-topbar-btn" onclick="window.location.href='onboarding.html'"
-          id="cityBtn">
-          &#127961; <span id="topbarCity">All Cities</span> &#9662;
-        </button>
-        <div class="status-indicator">
-          <div class="status-dot"></div>
-          <span>LIVE</span>
-        </div>
-        <div class="topbar-time" id="topbarTime"></div>
-      </div>
-    </header>
+    <!-- Top Navigation (built by common.js) -->
+    <nav id="topNavbar"></nav>
 
     <!-- Main Content -->
     <main class="main-content">
+
+      <div class="page-header">
+        <div class="page-header-left">
+          <div id="pageTitle"></div>
+          <div id="pageSubtitle"></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <div
+            style="display:flex;align-items:center;gap:6px;font-size:11px;font-family:var(--font-mono);color:var(--green);letter-spacing:0.5px">
+            <div
+              style="width:7px;height:7px;border-radius:50%;background:var(--green);animation:blink 2s ease-in-out infinite">
+            </div>
+            LIVE
+          </div>
+          <div id="topbarTime" style="font-family:var(--font-mono);font-size:13px;color:var(--text-muted)"></div>
+        </div>
+      </div>
 
       <!-- Stat Cards -->
       <div class="dashboard-stats">
@@ -101,9 +98,7 @@
               <div class="card-subtitle">Average vehicle count by hour of day</div>
             </div>
           </div>
-          <div class="chart-wrap" style="height:220px">
-            <canvas id="hourlyChart"></canvas>
-          </div>
+          <div class="chart-wrap" style="height:220px"><canvas id="hourlyChart"></canvas></div>
         </div>
         <div class="card">
           <div class="card-header">
@@ -112,9 +107,7 @@
               <div class="card-subtitle">Traffic level breakdown today</div>
             </div>
           </div>
-          <div class="chart-wrap" style="height:220px">
-            <canvas id="distChart"></canvas>
-          </div>
+          <div class="chart-wrap" style="height:220px"><canvas id="distChart"></canvas></div>
         </div>
       </div>
 
@@ -127,9 +120,7 @@
               <div class="card-subtitle">Top roads by average vehicle count</div>
             </div>
           </div>
-          <div class="chart-wrap" style="height:220px">
-            <canvas id="roadwiseChart"></canvas>
-          </div>
+          <div class="chart-wrap" style="height:220px"><canvas id="roadwiseChart"></canvas></div>
         </div>
         <div class="card">
           <div class="card-header">
@@ -138,9 +129,7 @@
               <div class="card-subtitle">Daily average vehicle count over time</div>
             </div>
           </div>
-          <div class="chart-wrap" style="height:220px">
-            <canvas id="trendChart"></canvas>
-          </div>
+          <div class="chart-wrap" style="height:220px"><canvas id="trendChart"></canvas></div>
         </div>
       </div>
 
@@ -155,13 +144,12 @@
           </div>
           <div class="heatmap-grid" id="heatmapGrid"></div>
           <div class="heatmap-labels">
-            <span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>23:00</span>
-          </div>
+            <span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>23:00</span></div>
           <div
             style="display:flex;align-items:center;gap:8px;margin-top:12px;font-family:var(--font-mono);font-size:10px;color:var(--text-muted)">
             <span>Low</span>
             <div
-              style="flex:1;height:6px;border-radius:3px;background:linear-gradient(to right,#22c55e,#f59e0b,#f97316,#ef4444)">
+              style="flex:1;height:6px;border-radius:3px;background:linear-gradient(to right,#34d399,#f59e0b,#fb923c,#f87171)">
             </div>
             <span>Critical</span>
           </div>
