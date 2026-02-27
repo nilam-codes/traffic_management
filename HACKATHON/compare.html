@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FlowGuard - Compare Roads</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+</head>
+
+<body>
+    <div class="app-shell">
+
+        <!-- Sidebar -->
+        <div id="sidebar"></div>
+
+        <!-- Topbar -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <div id="pageTitle"></div>
+                <div id="pageSubtitle"></div>
+            </div>
+            <div class="topbar-right">
+                <button class="btn btn-sm btn-ghost" id="resetCompare">&#8634; Reset</button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+
+            <!-- Road Selectors -->
+            <div class="compare-header">
+                <div class="card">
+                    <div class="card-title" style="margin-bottom:12px">Road A</div>
+                    <select class="form-control" id="compareRoad1">
+                        <option value="">Select first road...</option>
+                    </select>
+                </div>
+                <div class="compare-vs">VS</div>
+                <div class="card">
+                    <div class="card-title" style="margin-bottom:12px">Road B</div>
+                    <select class="form-control" id="compareRoad2">
+                        <option value="">Select second road...</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="text-align:center;margin-bottom:24px">
+                <button class="btn btn-primary btn-lg" id="compareBtn">&#9672; Run Comparison</button>
+            </div>
+
+            <!-- Placeholder -->
+            <div id="comparePlaceholder">
+                <div class="empty-state">
+                    <span class="empty-icon">&#9830;</span>
+                    <h3>Select Two Roads</h3>
+                    <p>Choose two different roads above and click "Run Comparison" to see side-by-side analytics</p>
+                </div>
+            </div>
+
+            <!-- Results (hidden initially) -->
+            <div id="compareResults" style="display:none">
+
+                <!-- Names -->
+                <div class="dashboard-grid" style="margin-bottom:12px">
+                    <div style="text-align:center">
+                        <div class="section-title" id="cmpName1">Road 1</div>
+                    </div>
+                    <div style="text-align:center">
+                        <div class="section-title" id="cmpName2">Road 2</div>
+                    </div>
+                </div>
+
+                <!-- Metric Blocks -->
+                <div class="compare-stats-grid">
+                    <div class="compare-stat-block" id="cmpBlock1"></div>
+                    <div class="compare-stat-block" id="cmpBlock2"></div>
+                </div>
+
+                <!-- Hourly Comparison Chart -->
+                <div class="card" style="margin-bottom:20px">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">Hourly Congestion Comparison</div>
+                            <div class="card-subtitle">24-hour vehicle count comparison</div>
+                        </div>
+                    </div>
+                    <div class="chart-wrap" style="height:300px">
+                        <canvas id="compareChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Distribution Comparison Chart -->
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">Traffic Level Distribution</div>
+                            <div class="card-subtitle">Distribution of congestion levels</div>
+                        </div>
+                    </div>
+                    <div class="chart-wrap" style="height:260px">
+                        <canvas id="distCompareChart"></canvas>
+                    </div>
+                </div>
+
+            </div>
+
+        </main>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="common.js"></script>
+    <script src="compare.js"></script>
+</body>
+
+</html>

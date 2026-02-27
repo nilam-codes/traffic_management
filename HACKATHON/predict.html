@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FlowGuard - Traffic Prediction</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+</head>
+
+<body>
+  <div class="app-shell">
+
+    <!-- Sidebar -->
+    <div id="sidebar"></div>
+
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <div id="pageTitle"></div>
+        <div id="pageSubtitle"></div>
+      </div>
+      <div class="topbar-right">
+        <div class="status-indicator">
+          <div class="status-dot"></div>
+          <span>ML ENGINE</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="predict-layout">
+
+        <!-- Prediction Form -->
+        <div>
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Prediction Parameters</div>
+                <div class="card-subtitle">Configure inputs for the ML engine</div>
+              </div>
+            </div>
+
+            <form id="predictForm" novalidate>
+              <div class="form-group">
+                <label class="form-label">Road <span style="color:var(--accent)">*</span></label>
+                <select class="form-control" id="predRoad">
+                  <option value="">Loading roads...</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Hour of Day <span style="color:var(--accent)">*</span></label>
+                <select class="form-control" id="predHour">
+                  <option value="">Select hour...</option>
+                  <option value="0">0:00 - Midnight</option>
+                  <option value="1">1:00 AM</option>
+                  <option value="2">2:00 AM</option>
+                  <option value="3">3:00 AM</option>
+                  <option value="4">4:00 AM</option>
+                  <option value="5">5:00 AM</option>
+                  <option value="6">6:00 AM</option>
+                  <option value="7">7:00 AM</option>
+                  <option value="8">8:00 AM - Rush Hour</option>
+                  <option value="9">9:00 AM - Rush Hour</option>
+                  <option value="10">10:00 AM</option>
+                  <option value="11">11:00 AM</option>
+                  <option value="12">12:00 PM - Noon</option>
+                  <option value="13">1:00 PM</option>
+                  <option value="14">2:00 PM</option>
+                  <option value="15">3:00 PM</option>
+                  <option value="16">4:00 PM</option>
+                  <option value="17">5:00 PM - Rush Hour</option>
+                  <option value="18">6:00 PM - Rush Hour</option>
+                  <option value="19">7:00 PM</option>
+                  <option value="20">8:00 PM</option>
+                  <option value="21">9:00 PM</option>
+                  <option value="22">10:00 PM</option>
+                  <option value="23">11:00 PM</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Weather</label>
+                <select class="form-control" id="predWeather">
+                  <option value="Clear">&#9728; Clear</option>
+                  <option value="Rain">&#127783; Rain</option>
+                  <option value="Fog">&#127787; Fog</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
+                  <input type="checkbox" id="predHoliday" style="accent-color:var(--accent);width:15px;height:15px" />
+                  <div>
+                    <div class="form-label" style="margin:0">Public Holiday</div>
+                    <div class="form-hint">Holidays typically reduce commuter traffic</div>
+                  </div>
+                </label>
+              </div>
+
+              <button type="submit" class="btn btn-primary w-full">&#9672; Run Prediction</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Result Panel -->
+        <div class="predict-result" id="predictResult">
+
+          <!-- Prediction Level -->
+          <div class="prediction-level-display" id="predLevelDisplay"></div>
+
+          <!-- Stats -->
+          <div class="prediction-stats mb-20">
+            <div class="pred-stat">
+              <div class="pred-stat-value" id="predConfidence">-</div>
+              <div class="pred-stat-label">CONFIDENCE</div>
+            </div>
+            <div class="pred-stat">
+              <div class="pred-stat-value" id="predScore">-</div>
+              <div class="pred-stat-label">LEVEL</div>
+            </div>
+            <div class="pred-stat">
+              <div class="pred-stat-value" id="predWeatherResult">-</div>
+              <div class="pred-stat-label">WEATHER</div>
+            </div>
+            <div class="pred-stat">
+              <div class="pred-stat-value" id="predHolidayResult">-</div>
+              <div class="pred-stat-label">HOLIDAY</div>
+            </div>
+          </div>
+
+          <!-- Suggestion -->
+          <div class="card mb-20">
+            <div class="card-title" style="margin-bottom:8px;font-size:12px">&#128161; RECOMMENDATION</div>
+            <p id="predSuggestion" style="font-size:13px;line-height:1.7;color:var(--text-secondary)"></p>
+            <p id="predNote" style="font-size:11px;color:var(--text-muted);margin-top:6px;font-family:var(--font-mono)">
+            </p>
+          </div>
+
+          <!-- 24-Hour Forecast -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">24-Hour Forecast</div>
+                <div class="card-subtitle">Predicted vehicle count by hour for this road</div>
+              </div>
+            </div>
+            <div class="chart-wrap" style="height:260px">
+              <canvas id="forecastChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="common.js"></script>
+  <script src="predict.js"></script>
+</body>
+
+</html>

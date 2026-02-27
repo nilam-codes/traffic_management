@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FlowGuard - Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+</head>
+
+<body>
+
+  <div class="app-shell">
+
+    <!-- Sidebar (built by common.js) -->
+    <div id="sidebar"></div>
+
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <div id="pageTitle"></div>
+        <div id="pageSubtitle"></div>
+      </div>
+      <div class="topbar-right">
+        <button class="btn btn-sm btn-ghost city-topbar-btn" onclick="window.location.href='onboarding.html'"
+          id="cityBtn">
+          &#127961; <span id="topbarCity">All Cities</span> &#9662;
+        </button>
+        <div class="status-indicator">
+          <div class="status-dot"></div>
+          <span>LIVE</span>
+        </div>
+        <div class="topbar-time" id="topbarTime"></div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+      <!-- Stat Cards -->
+      <div class="dashboard-stats">
+        <div class="stat-card">
+          <div class="stat-label">Total Roads</div>
+          <div class="stat-value" id="statRoads">&mdash;</div>
+          <div class="stat-trend up">&#9670; Network monitored</div>
+          <div class="stat-icon">&#9707;</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Peak Hour</div>
+          <div class="stat-value" id="statPeakHour" style="font-size:28px">&mdash;</div>
+          <div class="stat-trend" style="color:var(--cyan)">&#9650; Busiest time today</div>
+          <div class="stat-icon">&#9719;</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Critical Alerts</div>
+          <div class="stat-value" id="statAlerts" style="color:var(--red)">&mdash;</div>
+          <div class="stat-trend down">&#9632; Requires attention</div>
+          <div class="stat-icon">&#9888;</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Today's Records</div>
+          <div class="stat-value" id="statEntries">&mdash;</div>
+          <div class="stat-trend up">&#9650; Data entries today</div>
+          <div class="stat-icon">&#9783;</div>
+        </div>
+      </div>
+
+      <!-- Stats Row 2 -->
+      <div class="stat-grid" style="margin-bottom:24px">
+        <div class="stat-card" style="padding:16px">
+          <div class="stat-label">Busiest Road</div>
+          <div style="font-family:var(--font-display);font-size:20px;font-weight:700;color:var(--accent);margin-top:6px"
+            id="statBusiest">&mdash;</div>
+        </div>
+        <div class="stat-card" style="padding:16px">
+          <div class="stat-label">Low Traffic</div>
+          <div style="font-family:var(--font-display);font-size:20px;font-weight:700;color:var(--green);margin-top:6px"
+            id="statLow">&mdash;</div>
+        </div>
+        <div class="stat-card" style="padding:16px">
+          <div class="stat-label">Today's Date</div>
+          <div
+            style="font-family:var(--font-mono);font-size:16px;font-weight:400;color:var(--text-secondary);margin-top:6px"
+            id="todayDate"></div>
+        </div>
+        <div class="stat-card" style="padding:16px;cursor:pointer" onclick="window.location.href='predict.html'">
+          <div class="stat-label">Quick Action</div>
+          <div
+            style="font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--accent);margin-top:6px">
+            &#9672; Run Prediction &rarr;</div>
+        </div>
+      </div>
+
+      <!-- Charts Row 1 -->
+      <div class="dashboard-grid">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Hourly Congestion Pattern</div>
+              <div class="card-subtitle">Average vehicle count by hour of day</div>
+            </div>
+          </div>
+          <div class="chart-wrap" style="height:220px">
+            <canvas id="hourlyChart"></canvas>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Level Distribution</div>
+              <div class="card-subtitle">Traffic level breakdown today</div>
+            </div>
+          </div>
+          <div class="chart-wrap" style="height:220px">
+            <canvas id="distChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts Row 2 -->
+      <div class="dashboard-grid">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Road-wise Congestion</div>
+              <div class="card-subtitle">Top roads by average vehicle count</div>
+            </div>
+          </div>
+          <div class="chart-wrap" style="height:220px">
+            <canvas id="roadwiseChart"></canvas>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">30-Day Traffic Trend</div>
+              <div class="card-subtitle">Daily average vehicle count over time</div>
+            </div>
+          </div>
+          <div class="chart-wrap" style="height:220px">
+            <canvas id="trendChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Heatmap + Alerts -->
+      <div class="dashboard-grid">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">24-Hour Congestion Heatmap</div>
+              <div class="card-subtitle">Weekly average heat by hour</div>
+            </div>
+          </div>
+          <div class="heatmap-grid" id="heatmapGrid"></div>
+          <div class="heatmap-labels">
+            <span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>23:00</span>
+          </div>
+          <div
+            style="display:flex;align-items:center;gap:8px;margin-top:12px;font-family:var(--font-mono);font-size:10px;color:var(--text-muted)">
+            <span>Low</span>
+            <div
+              style="flex:1;height:6px;border-radius:3px;background:linear-gradient(to right,#22c55e,#f59e0b,#f97316,#ef4444)">
+            </div>
+            <span>Critical</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Active Alerts</div>
+              <div class="card-subtitle">Critical and high congestion incidents</div>
+            </div>
+            <a href="alerts.html" class="btn btn-sm btn-ghost">View All &rarr;</a>
+          </div>
+          <div id="alertsList"></div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="common.js"></script>
+  <script src="dashboard.js"></script>
+  <script>
+    document.getElementById("todayDate").textContent =
+      new Date().toLocaleDateString("en-IN", { weekday: "short", day: "2-digit", month: "long", year: "numeric" });
+  </script>
+</body>
+
+</html>

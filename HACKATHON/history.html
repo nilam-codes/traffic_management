@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FlowGuard - Traffic History</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+</head>
+
+<body>
+  <div class="app-shell">
+
+    <!-- Sidebar -->
+    <div id="sidebar"></div>
+
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <div id="pageTitle"></div>
+        <div id="pageSubtitle"></div>
+      </div>
+      <div class="topbar-right">
+        <button class="btn btn-sm btn-ghost" id="exportBtn">&#128229; Export CSV</button>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+      <!-- Stats Row -->
+      <div class="stat-grid" style="margin-bottom:20px">
+        <div class="stat-card" style="padding:16px">
+          <div class="stat-label">Total Records</div>
+          <div
+            style="font-family:var(--font-display);font-size:32px;font-weight:800;color:var(--text-primary);margin-top:4px"
+            id="histTotal">-</div>
+        </div>
+        <div class="stat-card" style="padding:16px">
+          <div class="stat-label">Avg Vehicles</div>
+          <div style="font-family:var(--font-display);font-size:32px;font-weight:800;color:var(--cyan);margin-top:4px"
+            id="histAvg">-</div>
+        </div>
+        <div class="stat-card" style="padding:16px">
+          <div class="stat-label">Critical Records</div>
+          <div style="font-family:var(--font-display);font-size:32px;font-weight:800;color:var(--red);margin-top:4px"
+            id="histCritical">-</div>
+        </div>
+        <div class="stat-card" style="padding:16px">
+          <div class="stat-label">High + Critical</div>
+          <div style="font-family:var(--font-display);font-size:32px;font-weight:800;color:var(--orange);margin-top:4px"
+            id="histHigh">-</div>
+        </div>
+      </div>
+
+      <!-- Trend Chart -->
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Traffic Trend</div>
+            <div class="card-subtitle">Average vehicle count over time</div>
+          </div>
+        </div>
+        <div class="chart-wrap" style="height:200px">
+          <canvas id="historyChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Filters -->
+      <div class="card" style="margin-bottom:20px">
+        <div class="history-filters">
+          <div class="form-group">
+            <label class="form-label">Road</label>
+            <select class="form-control" id="filterRoad">
+              <option value="">All Roads</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Date</label>
+            <input type="date" class="form-control" id="filterDate" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Level</label>
+            <select class="form-control" id="filterLevel">
+              <option value="">All Levels</option>
+              <option value="Low">Low</option>
+              <option value="Medium">Medium</option>
+              <option value="High">High</option>
+              <option value="Critical">Critical</option>
+            </select>
+          </div>
+          <button class="btn btn-primary btn-sm" id="filterBtn" style="margin-bottom:0;align-self:flex-end">&#128269;
+            Filter</button>
+        </div>
+      </div>
+
+      <!-- Data Table -->
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Road</th>
+                <th>Date / Time</th>
+                <th>Vehicles</th>
+                <th>Level</th>
+                <th>Weather</th>
+                <th>Holiday</th>
+                <th>Area</th>
+              </tr>
+            </thead>
+            <tbody id="historyBody">
+              <tr>
+                <td colspan="7" style="text-align:center;color:var(--text-muted);padding:40px">Loading data...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="common.js"></script>
+  <script src="history.js"></script>
+</body>
+
+</html>
