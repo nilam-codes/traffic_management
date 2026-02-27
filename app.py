@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 import mysql.connector
 from flask_bcrypt import Bcrypt
 from flask_cors import CORS
@@ -7,8 +7,9 @@ import numpy as np
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 import random
+import os
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='.', static_url_path='')
 bcrypt = Bcrypt(app)
 CORS(app)
 
@@ -29,12 +30,20 @@ def get_cursor():
     return db.cursor(dictionary=True)
 
 # ============================================
-# HOME ROUTE
+# SERVE FRONTEND FILES
 # ============================================
 
 @app.route("/")
-def home():
-    return "Traffic Congestion Prediction API 🚦 Running!"
+def serve_index():
+    return send_from_directory('.', 'index.html')
+
+@app.route("/app.js")
+def serve_js():
+    return send_from_directory('.', 'app.js')
+
+@app.route("/style.css")
+def serve_css():
+    return send_from_directory('.', 'style.css')
 
 # ============================================
 # HELPER FUNCTIONS
