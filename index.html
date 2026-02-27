@@ -1,0 +1,868 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CityPulse â€” City Traffic Intelligence</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <style>
+    .view {
+      display: none;
+    }
+
+    .view.active {
+      display: block;
+    }
+
+    .page {
+      display: none;
+    }
+
+    .page.active {
+      display: block;
+      animation: fadeUp 0.3s ease both;
+    }
+
+    .city-chip {
+      padding: 7px 18px;
+      border-radius: 100px;
+      border: 1px solid var(--border-light);
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 13px;
+      font-family: var(--font-body);
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+
+    .city-chip:hover,
+    .city-chip.selected {
+      background: var(--accent-dim);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .feature-mini {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .feature-mini span {
+      color: var(--accent);
+      font-size: 16px;
+    }
+
+    .role-description {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-style: italic;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—
+     â•‘  VIEW 1: AUTH (Login / Register)                        â•‘
+     â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+  <div id="view-auth" class="view auth-page">
+
+    <!-- Hero -->
+    <div class="auth-hero">
+      <div class="hero-content">
+        <span class="hero-icon">&#x2B21;</span>
+        <h1 class="hero-title">CITY<span>PULSE</span></h1>
+        <p class="hero-subtitle">AI-powered traffic prediction engine. Monitor congestion in real-time, predict
+          bottlenecks, and optimize city traffic flow.</p>
+        <div class="hero-features">
+          <div class="hero-feature">
+            <div class="hero-feature-icon">&#128202;</div>
+            <div class="hero-feature-text"><strong>Real-Time Analytics</strong> â€” Live dashboards with heatmaps, hourly
+              trends &amp; charts</div>
+          </div>
+          <div class="hero-feature">
+            <div class="hero-feature-icon">&#129504;</div>
+            <div class="hero-feature-text"><strong>ML Predictions</strong> â€” Random Forest model trained on historical
+              congestion data</div>
+          </div>
+          <div class="hero-feature">
+            <div class="hero-feature-icon">&#9888;&#65039;</div>
+            <div class="hero-feature-text"><strong>Smart Alerts</strong> â€” Instant notifications when roads hit critical
+              capacity</div>
+          </div>
+          <div class="hero-feature">
+            <div class="hero-feature-icon">&#128736;&#65039;</div>
+            <div class="hero-feature-text"><strong>Road Comparison</strong> â€” Side-by-side analytics to optimize traffic
+              flow</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Auth Forms -->
+    <div class="auth-form-panel">
+      <div class="auth-card">
+        <div class="auth-logo">
+          <div class="auth-logo-title" id="authTitle">SIGN IN</div>
+          <span class="auth-logo-sub" id="authSub">Access your traffic intelligence dashboard</span>
+        </div>
+        <div class="auth-tabs">
+          <button class="auth-tab active" id="tab-login" onclick="switchTab('login')">Sign In</button>
+          <button class="auth-tab" id="tab-register" onclick="switchTab('register')">Register</button>
+        </div>
+
+        <!-- Login -->
+        <div class="auth-form active" id="form-login">
+          <form id="loginForm" novalidate>
+            <div class="form-group"><label class="form-label">Email Address</label>
+              <input type="email" class="form-control" id="loginEmail" placeholder="you@example.com"
+                autocomplete="email" />
+            </div>
+            <div class="form-group"><label class="form-label">Password</label>
+              <input type="password" class="form-control" id="loginPassword" placeholder="Enter your password"
+                autocomplete="current-password" />
+            </div>
+            <button type="submit" class="btn btn-primary w-full" style="margin-top:6px;padding:13px">Sign In
+              &rarr;</button>
+          </form>
+          <div class="auth-footer" style="margin-top:18px">Works in demo mode if backend is offline</div>
+        </div>
+
+        <!-- Register -->
+        <div class="auth-form" id="form-register">
+          <form id="registerForm" novalidate>
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">Full Name <span
+                    style="color:var(--accent)">*</span></label>
+                <input type="text" class="form-control" id="regName" placeholder="John Doe" />
+              </div>
+              <div class="form-group"><label class="form-label">Email <span style="color:var(--accent)">*</span></label>
+                <input type="email" class="form-control" id="regEmail" placeholder="john@city.gov" />
+              </div>
+            </div>
+            <div class="form-group"><label class="form-label">Role</label>
+              <select class="form-control" id="regRole">
+                <option value="admin">Administrator</option>
+                <option value="Traffic Analyst">Traffic Analyst</option>
+                <option value="City Planner">City Planner</option>
+                <option value="Traffic Officer">Traffic Officer</option>
+              </select>
+              <div class="role-description" id="roleDesc">Full system access â€” manage users, roads, and all analytics
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">Password <span
+                    style="color:var(--accent)">*</span></label>
+                <input type="password" class="form-control" id="regPassword" placeholder="Min 6 chars" />
+              </div>
+              <div class="form-group"><label class="form-label">Confirm <span
+                    style="color:var(--accent)">*</span></label>
+                <input type="password" class="form-control" id="regConfirm" placeholder="Repeat" />
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary w-full" style="margin-top:6px;padding:13px">Create Account
+              &rarr;</button>
+          </form>
+        </div>
+
+        <div class="auth-footer" style="margin-top:24px"><span id="authClock" style="color:var(--accent)"></span>
+          &middot; CityPulse &copy; 2025</div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—
+     â•‘  VIEW 2: ONBOARDING (City Selection)                    â•‘
+     â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+  <div id="view-onboarding" class="view onboarding-page">
+    <div class="onboarding-card">
+      <div style="text-align:center;margin-bottom:28px">
+        <span
+          style="font-size:56px;color:var(--accent);filter:drop-shadow(0 0 20px var(--accent-glow));display:block;margin-bottom:12px">&#x2B21;</span>
+        <div class="onboarding-title">Welcome to CityPulse</div>
+        <div class="onboarding-subtitle" style="margin-top:6px">Select the city you want to monitor.</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Your City <span style="color:var(--accent)">*</span></label>
+        <input type="text" class="form-control" id="obCity" placeholder="e.g. Bangalore, Mumbai, Delhi"
+          style="font-size:16px;padding:14px 16px" />
+        <div class="form-hint">This determines which roads and traffic data you see</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:28px">
+        <button class="city-chip" onclick="pickCity('Bangalore')">Bangalore</button>
+        <button class="city-chip" onclick="pickCity('Mumbai')">Mumbai</button>
+        <button class="city-chip" onclick="pickCity('Delhi')">Delhi</button>
+        <button class="city-chip" onclick="pickCity('Hyderabad')">Hyderabad</button>
+        <button class="city-chip" onclick="pickCity('Chennai')">Chennai</button>
+        <button class="city-chip" onclick="pickCity('Pune')">Pune</button>
+      </div>
+      <div style="margin-bottom:28px">
+        <div
+          style="font-family:var(--font-mono);font-size:10px;letter-spacing:1.5px;color:var(--text-muted);margin-bottom:12px">
+          WHAT YOU'LL GET</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div class="feature-mini"><span>&#x2B21;</span> Live Dashboard</div>
+          <div class="feature-mini"><span>&#x25C8;</span> ML Predictions</div>
+          <div class="feature-mini"><span>&#x25EC;</span> Smart Alerts</div>
+          <div class="feature-mini"><span>&#x25A7;</span> Road Comparison</div>
+        </div>
+      </div>
+      <button class="btn btn-primary w-full btn-lg" onclick="finishOnboarding()">Launch Dashboard &rarr;</button>
+    </div>
+  </div>
+
+
+  <!-- â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—
+     â•‘  VIEW 3: MAIN APP (Navbar + All Pages)                  â•‘
+     â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+  <div id="view-app" class="view">
+    <div class="app-shell">
+      <nav id="topNavbar"></nav>
+
+      <main class="main-content">
+
+        <!-- â•â•â•â•â•â•â•â•â•â•â•â•  DASHBOARD  â•â•â•â•â•â•â•â•â•â•â•â• -->
+        <div id="page-dashboard" class="page">
+          <div class="page-header">
+            <div class="page-header-left">
+              <div class="page-title-text">DASHBOARD</div>
+              <div class="page-subtitle-text">Real-time analytics command center</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px">
+              <div
+                style="display:flex;align-items:center;gap:6px;font-size:11px;font-family:var(--font-mono);color:var(--green);letter-spacing:0.5px">
+                <div
+                  style="width:7px;height:7px;border-radius:50%;background:var(--green);animation:blink 2s ease-in-out infinite">
+                </div>LIVE
+              </div>
+            </div>
+          </div>
+          <div class="dashboard-stats">
+            <div class="stat-card">
+              <div class="stat-label">Total Roads</div>
+              <div class="stat-value" id="statRoads">&mdash;</div>
+              <div class="stat-icon">&#9707;</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Peak Hour</div>
+              <div class="stat-value" id="statPeakHour" style="font-size:28px">&mdash;</div>
+              <div class="stat-icon">&#9719;</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Critical Alerts</div>
+              <div class="stat-value" id="statAlerts" style="color:var(--red)">&mdash;</div>
+              <div class="stat-icon">&#9888;</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Today's Records</div>
+              <div class="stat-value" id="statEntries">&mdash;</div>
+              <div class="stat-icon">&#9783;</div>
+            </div>
+          </div>
+          <div class="stat-grid" style="margin-bottom:24px">
+            <div class="stat-card" style="padding:16px">
+              <div class="stat-label">Busiest Road</div>
+              <div
+                style="font-family:var(--font-display);font-size:20px;font-weight:700;color:var(--accent);margin-top:6px"
+                id="statBusiest">&mdash;</div>
+            </div>
+            <div class="stat-card" style="padding:16px">
+              <div class="stat-label">Low Traffic</div>
+              <div
+                style="font-family:var(--font-display);font-size:20px;font-weight:700;color:var(--green);margin-top:6px"
+                id="statLow">&mdash;</div>
+            </div>
+            <div class="stat-card" style="padding:16px;cursor:pointer" onclick="navigate('predict')">
+              <div class="stat-label">Quick Action</div>
+              <div
+                style="font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--accent);margin-top:6px">
+                &#9672; Run Prediction &rarr;</div>
+            </div>
+          </div>
+          <div class="dashboard-grid">
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <div class="card-title">Hourly Congestion</div>
+                  <div class="card-subtitle">Average vehicles by hour</div>
+                </div>
+              </div>
+              <div class="chart-wrap" style="height:220px"><canvas id="hourlyChart"></canvas></div>
+            </div>
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <div class="card-title">Level Distribution</div>
+                  <div class="card-subtitle">Traffic level breakdown</div>
+                </div>
+              </div>
+              <div class="chart-wrap" style="height:220px"><canvas id="distChart"></canvas></div>
+            </div>
+          </div>
+          <div class="dashboard-grid">
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <div class="card-title">Road-wise Congestion</div>
+                  <div class="card-subtitle">Top roads by avg vehicles</div>
+                </div>
+              </div>
+              <div class="chart-wrap" style="height:220px"><canvas id="roadwiseChart"></canvas></div>
+            </div>
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <div class="card-title">30-Day Trend</div>
+                  <div class="card-subtitle">Daily average over time</div>
+                </div>
+              </div>
+              <div class="chart-wrap" style="height:220px"><canvas id="trendChart"></canvas></div>
+            </div>
+          </div>
+          <div class="dashboard-grid">
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <div class="card-title">Congestion Heatmap</div>
+                  <div class="card-subtitle">Weekly heat by hour</div>
+                </div>
+              </div>
+              <div class="heatmap-grid" id="heatmapGrid"></div>
+              <div class="heatmap-labels">
+                <span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>23:00</span>
+              </div>
+              <div
+                style="display:flex;align-items:center;gap:8px;margin-top:12px;font-family:var(--font-mono);font-size:10px;color:var(--text-muted)">
+                <span>Low</span>
+                <div
+                  style="flex:1;height:6px;border-radius:3px;background:linear-gradient(to right,#34d399,#f59e0b,#fb923c,#f87171)">
+                </div><span>Critical</span>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <div class="card-title">Active Alerts</div>
+                  <div class="card-subtitle">Critical and high incidents</div>
+                </div><button class="btn btn-sm btn-ghost" onclick="navigate('alerts')">View All &rarr;</button>
+              </div>
+              <div id="alertsList"></div>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- â•â•â•â•â•â•â•â•â•â•â•â•  PREDICT  â•â•â•â•â•â•â•â•â•â•â•â• -->
+        <div id="page-predict" class="page">
+          <div class="page-header">
+            <div class="page-header-left">
+              <div class="page-title-text">TRAFFIC PREDICTION</div>
+              <div class="page-subtitle-text">ML-powered congestion forecasting engine</div>
+            </div>
+            <div
+              style="display:flex;align-items:center;gap:6px;font-size:11px;font-family:var(--font-mono);color:var(--cyan)">
+              <div
+                style="width:7px;height:7px;border-radius:50%;background:var(--cyan);animation:blink 2s ease-in-out infinite">
+              </div>ML ENGINE
+            </div>
+          </div>
+          <div class="predict-layout">
+            <div>
+              <div class="card">
+                <div class="card-header">
+                  <div>
+                    <div class="card-title">Prediction Parameters</div>
+                    <div class="card-subtitle">Configure inputs for the ML engine</div>
+                  </div>
+                </div>
+                <form id="predictForm" novalidate>
+                  <div class="form-group"><label class="form-label">Road <span
+                        style="color:var(--accent)">*</span></label><select class="form-control" id="predRoad">
+                      <option value="">Loading...</option>
+                    </select></div>
+                  <div class="form-group"><label class="form-label">Hour <span
+                        style="color:var(--accent)">*</span></label>
+                    <select class="form-control" id="predHour">
+                      <option value="">Select...</option>
+                      <option value="0">0:00</option>
+                      <option value="1">1:00</option>
+                      <option value="2">2:00</option>
+                      <option value="3">3:00</option>
+                      <option value="4">4:00</option>
+                      <option value="5">5:00</option>
+                      <option value="6">6:00</option>
+                      <option value="7">7:00</option>
+                      <option value="8">8:00 Rush</option>
+                      <option value="9">9:00 Rush</option>
+                      <option value="10">10:00</option>
+                      <option value="11">11:00</option>
+                      <option value="12">12:00</option>
+                      <option value="13">13:00</option>
+                      <option value="14">14:00</option>
+                      <option value="15">15:00</option>
+                      <option value="16">16:00</option>
+                      <option value="17">17:00 Rush</option>
+                      <option value="18">18:00 Rush</option>
+                      <option value="19">19:00</option>
+                      <option value="20">20:00</option>
+                      <option value="21">21:00</option>
+                      <option value="22">22:00</option>
+                      <option value="23">23:00</option>
+                    </select>
+                  </div>
+                  <div class="form-group"><label class="form-label">Weather</label><select class="form-control"
+                      id="predWeather">
+                      <option value="Clear">&#9728; Clear</option>
+                      <option value="Rain">&#127783; Rain</option>
+                      <option value="Fog">&#127787; Fog</option>
+                    </select></div>
+                  <div class="form-group"><label style="display:flex;align-items:center;gap:10px;cursor:pointer"><input
+                        type="checkbox" id="predHoliday" style="accent-color:var(--accent);width:15px;height:15px" />
+                      <div>
+                        <div class="form-label" style="margin:0">Public Holiday</div>
+                        <div class="form-hint">Holidays reduce commuter traffic</div>
+                      </div>
+                    </label></div>
+                  <button type="submit" class="btn btn-primary w-full">&#9672; Run Prediction</button>
+                </form>
+              </div>
+            </div>
+            <div class="predict-result" id="predictResult">
+              <div class="prediction-level-display" id="predLevelDisplay"></div>
+              <div class="prediction-stats mb-20">
+                <div class="pred-stat">
+                  <div class="pred-stat-value" id="predConfidence">-</div>
+                  <div class="pred-stat-label">CONFIDENCE</div>
+                </div>
+                <div class="pred-stat">
+                  <div class="pred-stat-value" id="predScore">-</div>
+                  <div class="pred-stat-label">LEVEL</div>
+                </div>
+                <div class="pred-stat">
+                  <div class="pred-stat-value" id="predWeatherResult">-</div>
+                  <div class="pred-stat-label">WEATHER</div>
+                </div>
+                <div class="pred-stat">
+                  <div class="pred-stat-value" id="predHolidayResult">-</div>
+                  <div class="pred-stat-label">HOLIDAY</div>
+                </div>
+              </div>
+              <div class="card mb-20">
+                <div class="card-title" style="margin-bottom:8px;font-size:12px">&#128161; RECOMMENDATION</div>
+                <p id="predSuggestion" style="font-size:13px;line-height:1.7;color:var(--text-secondary)"></p>
+                <p id="predNote"
+                  style="font-size:11px;color:var(--text-muted);margin-top:6px;font-family:var(--font-mono)"></p>
+              </div>
+              <div class="card">
+                <div class="card-header">
+                  <div>
+                    <div class="card-title">24-Hour Forecast</div>
+                    <div class="card-subtitle">Predicted vehicles by hour</div>
+                  </div>
+                </div>
+                <div class="chart-wrap" style="height:260px"><canvas id="forecastChart"></canvas></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- â•â•â•â•â•â•â•â•â•â•â•â•  HISTORY  â•â•â•â•â•â•â•â•â•â•â•â• -->
+        <div id="page-history" class="page">
+          <div class="page-header">
+            <div class="page-header-left">
+              <div class="page-title-text">TRAFFIC HISTORY</div>
+              <div class="page-subtitle-text">Historical traffic data records</div>
+            </div>
+            <button class="btn btn-sm btn-ghost" id="exportBtn">&#128229; Export CSV</button>
+          </div>
+          <div class="stat-grid" style="margin-bottom:20px">
+            <div class="stat-card" style="padding:16px">
+              <div class="stat-label">Total Records</div>
+              <div style="font-family:var(--font-display);font-size:32px;font-weight:800;margin-top:4px" id="histTotal">
+                -</div>
+            </div>
+            <div class="stat-card" style="padding:16px">
+              <div class="stat-label">Avg Vehicles</div>
+              <div
+                style="font-family:var(--font-display);font-size:32px;font-weight:800;color:var(--cyan);margin-top:4px"
+                id="histAvg">-</div>
+            </div>
+            <div class="stat-card" style="padding:16px">
+              <div class="stat-label">Critical</div>
+              <div
+                style="font-family:var(--font-display);font-size:32px;font-weight:800;color:var(--red);margin-top:4px"
+                id="histCritical">-</div>
+            </div>
+            <div class="stat-card" style="padding:16px">
+              <div class="stat-label">High+Critical</div>
+              <div
+                style="font-family:var(--font-display);font-size:32px;font-weight:800;color:var(--orange);margin-top:4px"
+                id="histHigh">-</div>
+            </div>
+          </div>
+          <div class="card" style="margin-bottom:20px">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Traffic Trend</div>
+                <div class="card-subtitle">Average vehicles over time</div>
+              </div>
+            </div>
+            <div class="chart-wrap" style="height:200px"><canvas id="historyChart"></canvas></div>
+          </div>
+          <div class="card" style="margin-bottom:20px">
+            <div class="history-filters">
+              <div class="form-group"><label class="form-label">Road</label><select class="form-control"
+                  id="filterRoad">
+                  <option value="">All Roads</option>
+                </select></div>
+              <div class="form-group"><label class="form-label">Date</label><input type="date" class="form-control"
+                  id="filterDate" /></div>
+              <div class="form-group"><label class="form-label">Level</label><select class="form-control"
+                  id="filterLevel">
+                  <option value="">All</option>
+                  <option value="Low">Low</option>
+                  <option value="Medium">Medium</option>
+                  <option value="High">High</option>
+                  <option value="Critical">Critical</option>
+                </select></div>
+              <button class="btn btn-primary btn-sm" id="filterBtn"
+                style="margin-bottom:0;align-self:flex-end">&#128269; Filter</button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Road</th>
+                    <th>Date/Time</th>
+                    <th>Vehicles</th>
+                    <th>Level</th>
+                    <th>Weather</th>
+                    <th>Holiday</th>
+                    <th>Area</th>
+                  </tr>
+                </thead>
+                <tbody id="historyBody">
+                  <tr>
+                    <td colspan="7" style="text-align:center;color:var(--text-muted);padding:40px">Loading...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- â•â•â•â•â•â•â•â•â•â•â•â•  ADD TRAFFIC  â•â•â•â•â•â•â•â•â•â•â•â• -->
+        <div id="page-add-traffic" class="page">
+          <div class="page-header">
+            <div class="page-header-left">
+              <div class="page-title-text">ADD TRAFFIC DATA</div>
+              <div class="page-subtitle-text">Submit a new traffic observation</div>
+            </div>
+            <div
+              style="display:flex;align-items:center;gap:6px;font-size:11px;font-family:var(--font-mono);color:var(--accent)">
+              <div
+                style="width:7px;height:7px;border-radius:50%;background:var(--accent);animation:blink 2s ease-in-out infinite">
+              </div>INPUT
+            </div>
+          </div>
+          <div class="add-traffic-layout">
+            <div>
+              <div class="card">
+                <div class="card-header">
+                  <div>
+                    <div class="card-title">Submit Traffic Observation</div>
+                    <div class="card-subtitle">Record a new data entry</div>
+                  </div>
+                </div>
+                <form id="trafficForm" novalidate>
+                  <div class="form-group"><label class="form-label">Road <span
+                        style="color:var(--accent)">*</span></label><select class="form-control" id="addRoad">
+                      <option value="">Loading...</option>
+                    </select></div>
+                  <div class="form-row">
+                    <div class="form-group"><label class="form-label">Date <span
+                          style="color:var(--accent)">*</span></label><input type="date" class="form-control"
+                        id="addDate" /></div>
+                    <div class="form-group"><label class="form-label">Hour <span
+                          style="color:var(--accent)">*</span></label>
+                      <select class="form-control" id="addHour">
+                        <option value="">Select...</option>
+                        <option value="0">0:00</option>
+                        <option value="1">1:00</option>
+                        <option value="2">2:00</option>
+                        <option value="3">3:00</option>
+                        <option value="4">4:00</option>
+                        <option value="5">5:00</option>
+                        <option value="6">6:00</option>
+                        <option value="7">7:00</option>
+                        <option value="8">8:00</option>
+                        <option value="9">9:00</option>
+                        <option value="10">10:00</option>
+                        <option value="11">11:00</option>
+                        <option value="12">12:00</option>
+                        <option value="13">13:00</option>
+                        <option value="14">14:00</option>
+                        <option value="15">15:00</option>
+                        <option value="16">16:00</option>
+                        <option value="17">17:00</option>
+                        <option value="18">18:00</option>
+                        <option value="19">19:00</option>
+                        <option value="20">20:00</option>
+                        <option value="21">21:00</option>
+                        <option value="22">22:00</option>
+                        <option value="23">23:00</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group"><label class="form-label">Vehicle Count <span
+                        style="color:var(--accent)">*</span></label><input type="number" class="form-control"
+                      id="addVehicles" placeholder="e.g. 850" min="0" />
+                    <div class="form-hint">Congestion level auto-calculated from road capacity</div>
+                  </div>
+                  <div class="form-group"><label class="form-label">Weather</label><select class="form-control"
+                      id="addWeather">
+                      <option value="Clear">&#9728; Clear</option>
+                      <option value="Rain">&#127783; Rain</option>
+                      <option value="Fog">&#127787; Fog</option>
+                    </select></div>
+                  <div class="form-group"><label style="display:flex;align-items:center;gap:10px;cursor:pointer"><input
+                        type="checkbox" id="addHoliday" style="accent-color:var(--accent);width:15px;height:15px" />
+                      <div>
+                        <div class="form-label" style="margin:0">Public Holiday</div>
+                      </div>
+                    </label></div>
+                  <div style="display:flex;gap:10px;margin-top:8px"><button type="submit" class="btn btn-primary"
+                      style="flex:1">&#9673; Submit</button><button type="button" class="btn btn-ghost"
+                      onclick="resetTrafficForm()">&#8634; Reset</button></div>
+                </form>
+              </div>
+            </div>
+            <div>
+              <div class="card">
+                <div class="card-header">
+                  <div>
+                    <div class="card-title">Recent Submissions</div>
+                    <div class="card-subtitle">Your last entries</div>
+                  </div>
+                </div>
+                <div id="recentList" class="recent-submissions"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- â•â•â•â•â•â•â•â•â•â•â•â•  ALERTS  â•â•â•â•â•â•â•â•â•â•â•â• -->
+        <div id="page-alerts" class="page">
+          <div class="page-header">
+            <div class="page-header-left">
+              <div class="page-title-text">TRAFFIC ALERTS</div>
+              <div class="page-subtitle-text">Critical and high congestion monitor</div>
+            </div>
+            <button class="btn btn-sm btn-ghost" id="refreshAlerts" onclick="loadAlerts()">&#8635; Refresh</button>
+          </div>
+          <div class="stat-grid" style="margin-bottom:20px">
+            <div class="stat-card" style="padding:16px">
+              <div class="stat-label">Total Alerts</div>
+              <div style="font-family:var(--font-display);font-size:32px;font-weight:800;margin-top:4px"
+                id="alertTotal">-</div>
+            </div>
+            <div class="stat-card" style="padding:16px">
+              <div class="stat-label">Critical</div>
+              <div
+                style="font-family:var(--font-display);font-size:32px;font-weight:800;color:var(--red);margin-top:4px"
+                id="alertCritical">-</div>
+            </div>
+            <div class="stat-card" style="padding:16px">
+              <div class="stat-label">High</div>
+              <div
+                style="font-family:var(--font-display);font-size:32px;font-weight:800;color:var(--orange);margin-top:4px"
+                id="alertHigh">-</div>
+            </div>
+            <div class="stat-card" style="padding:16px">
+              <div class="stat-label">Today</div>
+              <div
+                style="font-family:var(--font-display);font-size:32px;font-weight:800;color:var(--cyan);margin-top:4px"
+                id="alertToday">-</div>
+            </div>
+          </div>
+          <div class="dashboard-grid">
+            <div>
+              <div class="card" style="margin-bottom:16px"><input type="text" class="form-control" id="alertSearch"
+                  placeholder="&#128269; Search alerts..." style="margin-bottom:12px" />
+                <div class="alerts-filters"><button class="filter-chip active" data-filter="All">All</button><button
+                    class="filter-chip" data-filter="Critical">&#9632; Critical</button><button class="filter-chip"
+                    data-filter="High">&#9650; High</button></div>
+              </div>
+              <div id="alertsContainer"></div>
+            </div>
+            <div>
+              <div class="card" style="position:sticky;top:calc(var(--navbar-h) + 20px)">
+                <div class="card-header">
+                  <div>
+                    <div class="card-title">Alert Distribution</div>
+                    <div class="card-subtitle">Critical vs High</div>
+                  </div>
+                </div>
+                <div class="chart-wrap" style="height:280px"><canvas id="alertChart"></canvas></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- â•â•â•â•â•â•â•â•â•â•â•â•  ROADS  â•â•â•â•â•â•â•â•â•â•â•â• -->
+        <div id="page-roads" class="page">
+          <div class="page-header">
+            <div class="page-header-left">
+              <div class="page-title-text">ROAD NETWORK</div>
+              <div class="page-subtitle-text">Manage monitored road infrastructure</div>
+            </div>
+            <div
+              style="display:flex;align-items:center;gap:6px;font-size:11px;font-family:var(--font-mono);color:var(--green)">
+              <div
+                style="width:7px;height:7px;border-radius:50%;background:var(--green);animation:blink 2s ease-in-out infinite">
+              </div>DATABASE
+            </div>
+          </div>
+          <div class="stat-grid" style="margin-bottom:20px">
+            <div class="stat-card" style="padding:16px">
+              <div class="stat-label">Total Roads</div>
+              <div style="font-family:var(--font-display);font-size:32px;font-weight:800;margin-top:4px" id="roadTotal">
+                -</div>
+            </div>
+            <div class="stat-card" style="padding:16px">
+              <div class="stat-label">Highways</div>
+              <div
+                style="font-family:var(--font-display);font-size:32px;font-weight:800;color:var(--cyan);margin-top:4px"
+                id="roadHighways">-</div>
+            </div>
+            <div class="stat-card" style="padding:16px">
+              <div class="stat-label">Arterial</div>
+              <div
+                style="font-family:var(--font-display);font-size:32px;font-weight:800;color:var(--accent);margin-top:4px"
+                id="roadArterial">-</div>
+            </div>
+            <div class="stat-card" style="padding:16px">
+              <div class="stat-label">Total Capacity</div>
+              <div
+                style="font-family:var(--font-display);font-size:28px;font-weight:800;color:var(--green);margin-top:4px">
+                <span id="roadKm">-</span> <span
+                  style="font-size:14px;font-weight:400;color:var(--text-muted)">units</span>
+              </div>
+            </div>
+          </div>
+          <div class="roads-layout">
+            <div>
+              <div class="card" style="margin-bottom:16px;padding:16px"><input type="text" class="form-control"
+                  id="roadSearch" placeholder="&#128269; Search roads..." /></div>
+              <div id="roadsList"></div>
+            </div>
+            <div>
+              <div class="card" style="position:sticky;top:calc(var(--navbar-h) + 20px)">
+                <div class="card-header">
+                  <div>
+                    <div class="card-title">Add New Road</div>
+                    <div class="card-subtitle">Register a road in the network</div>
+                  </div>
+                </div>
+                <form id="addRoadForm" novalidate>
+                  <div class="form-group"><label class="form-label">Road Name <span
+                        style="color:var(--accent)">*</span></label><input type="text" class="form-control"
+                      id="newRoadName" placeholder="e.g. MG Road" /></div>
+                  <div class="form-group"><label class="form-label">Area</label><input type="text" class="form-control"
+                      id="newRoadLocation" placeholder="e.g. Central" /></div>
+                  <div class="form-group"><label class="form-label">Capacity <span
+                        style="color:var(--accent)">*</span></label><input type="number" class="form-control"
+                      id="newRoadCapacity" placeholder="e.g. 1200" min="100" />
+                    <div class="form-hint">Max vehicles before congestion</div>
+                  </div>
+                  <button type="submit" class="btn btn-primary w-full" style="margin-top:8px">&#9707; Add Road</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- â•â•â•â•â•â•â•â•â•â•â•â•  COMPARE  â•â•â•â•â•â•â•â•â•â•â•â• -->
+        <div id="page-compare" class="page">
+          <div class="page-header">
+            <div class="page-header-left">
+              <div class="page-title-text">COMPARE ROADS</div>
+              <div class="page-subtitle-text">Side-by-side analytics comparison</div>
+            </div>
+            <button class="btn btn-sm btn-ghost" onclick="resetComparison()">&#8634; Reset</button>
+          </div>
+          <div class="compare-header">
+            <div class="card">
+              <div class="card-title" style="margin-bottom:12px">Road A</div><select class="form-control"
+                id="compareRoad1">
+                <option value="">Select...</option>
+              </select>
+            </div>
+            <div class="compare-vs">VS</div>
+            <div class="card">
+              <div class="card-title" style="margin-bottom:12px">Road B</div><select class="form-control"
+                id="compareRoad2">
+                <option value="">Select...</option>
+              </select>
+            </div>
+          </div>
+          <div style="text-align:center;margin-bottom:24px"><button class="btn btn-primary btn-lg" id="compareBtn"
+              onclick="runComparison()">&#9672; Run Comparison</button></div>
+          <div id="comparePlaceholder">
+            <div class="empty-state"><span class="empty-icon">&#9830;</span>
+              <h3>Select Two Roads</h3>
+              <p>Choose two roads and click "Run Comparison"</p>
+            </div>
+          </div>
+          <div id="compareResults" style="display:none">
+            <div class="compare-stats-grid">
+              <div class="compare-stat-block" id="cmpBlock1"></div>
+              <div class="compare-stat-block" id="cmpBlock2"></div>
+            </div>
+            <div class="card" style="margin-bottom:20px">
+              <div class="card-header">
+                <div>
+                  <div class="card-title">Hourly Comparison</div>
+                  <div class="card-subtitle">24-hour vehicle count</div>
+                </div>
+              </div>
+              <div class="chart-wrap" style="height:300px"><canvas id="compareChart"></canvas></div>
+            </div>
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <div class="card-title">Level Distribution</div>
+                  <div class="card-subtitle">Congestion breakdown</div>
+                </div>
+              </div>
+              <div class="chart-wrap" style="height:260px"><canvas id="distCompareChart"></canvas></div>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+
+</html>
