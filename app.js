@@ -260,44 +260,136 @@ function fillRoadSelect(selId, roads) {
 // ================================================================
 //  DASHBOARD
 // ================================================================
+
+// Demo data shown when backend is offline
+var DEMO_ROADS = [
+    { id: 1, road_name: "MG Road", area: "Central", city: "Bangalore", capacity: 1200, vehicle_count: 950, congestion_level: "High" },
+    { id: 2, road_name: "Ring Road", area: "Outer Ring", city: "Bangalore", capacity: 1500, vehicle_count: 680, congestion_level: "Medium" },
+    { id: 3, road_name: "NH-44", area: "Highway", city: "Bangalore", capacity: 1800, vehicle_count: 1650, congestion_level: "Critical" },
+    { id: 4, road_name: "Residency Road", area: "CBD", city: "Bangalore", capacity: 1000, vehicle_count: 320, congestion_level: "Low" },
+    { id: 5, road_name: "Whitefield Road", area: "East", city: "Bangalore", capacity: 1000, vehicle_count: 780, congestion_level: "High" }
+];
+
+var DEMO_DASH = { total_roads: 12, current_critical: 3, peak_hour: "9:00", today_counts: { Low: 18, Medium: 12, High: 6, Critical: 3 } };
+var DEMO_ROADWISE = DEMO_ROADS.map(r => ({ road_name: r.road_name, area: r.area, avg_vehicles: r.vehicle_count, usage_percent: Math.round(r.vehicle_count / r.capacity * 100), capacity: r.capacity, congestion_level: r.congestion_level }));
+var DEMO_HOURLY = Array.from({ length: 24 }, (_, i) => ({ hour: i, avg_vehicles: Math.round(200 + 600 * Math.pow(Math.sin(Math.PI * (i - 6) / 12), 2) * (i >= 6 && i <= 22 ? 1 : 0.2)) }));
+var DEMO_TREND = Array.from({ length: 14 }, (_, i) => ({ date: new Date(Date.now() - (13 - i) * 864e5).toISOString().split("T")[0], avg_vehicles: Math.round(400 + 80 * i + Math.random() * 150) }));
+var DEMO_ALERTS = [
+    { road_name: "MG Road", area: "Central", vehicle_count: 1100, congestion_level: "Critical", weather: "Clear", recorded_at: new Date().toISOString(), capacity: 1200, suggestion: "Deploy traffic police immediately!" },
+    { road_name: "NH-44", area: "Highway", vehicle_count: 1650, congestion_level: "Critical", weather: "Rain", recorded_at: new Date(Date.now() - 3600000).toISOString(), capacity: 1800, suggestion: "Use alternate routes." },
+    { road_name: "Whitefield Rd", area: "East", vehicle_count: 820, congestion_level: "High", weather: "Clear", recorded_at: new Date(Date.now() - 7200000).toISOString(), capacity: 1000, suggestion: "Consider public transport." }
+];
+
 async function loadDashboard() {
     showLoading("Loading dashboard...");
 
-    try {
-        const dash = await fetchJSON("/analytics/dashboard");
-        const roadwise = await fetchJSON("/analytics/roadwise");
-        const hourly = await fetchJSON("/analytics/hourly");
-        const trend = await fetchJSON("/analytics/trend");
-        const heatmap = await fetchJSON("/analytics/heatmap");
-        const alerts = await fetchJSON("/analytics/alerts");
+    // Fetch all 6 endpoints; fall back to demo data per endpoint if any fail
+    const [dashRes, roadwiseRes, hourlyRes, trendRes, heatmapRes, alertsRes] = await Promise.allSettled([
+        fetchJSON("/analytics/dashboard"),
+        fetchJSON("/analytics/roadwise"),
+        fetchJSON("/analytics/hourly"),
+        fetchJSON("/analytics/trend"),
+        fetchJSON("/analytics/heatmap"),
+        fetchJSON("/analytics/alerts")
+    ]);
 
-        hideLoading();
+    const usingDemo = [dashRes, roadwiseRes, hourlyRes, trendRes, heatmapRes, alertsRes].some(r => r.status !== "fulfilled");
+    if (usingDemo) {
+        showToast("\u26A1 Backend offline \u2014 showing demo data", "warning", 5000);
+    }
 
-        setText("statRoads", dash.total_roads);
-        setText("statPeakHour", dash.peak_hour || "—");
-        setText("statAlerts", dash.current_critical);
+    const dash = dashRes.status === "fulfilled" ? dashRes.value : DEMO_DASH;
+    const roadwise = roadwiseRes.status === "fulfilled" ? roadwiseRes.value : DEMO_ROADWISE;
+    const hourly = hourlyRes.status === "fulfilled" ? hourlyRes.value : DEMO_HOURLY;
+    const trend = trendRes.status === "fulfilled" ? trendRes.value : DEMO_TREND;
+    const heatmap = heatmapRes.status === "fulfilled" ? heatmapRes.value : [];
+    const alerts = alertsRes.status === "fulfilled" ? alertsRes.value : DEMO_ALERTS;
 
-        const tc = dash.today_counts || {};
-        setText("statEntries", Object.values(tc).reduce((a,b)=>a+b,0));
-        setText("statLow", tc.Low || 0);
+    hideLoading();
 
-        if (roadwise && roadwise.length) {
-            setText("statBusiest", roadwise[0].road_name);
+    // --- Stats ---
+    const tc = dash.today_counts || {};
+    setText("statRoads", dash.total_roads);
+    setText("statPeakHour", dash.peak_hour || "\u2014");
+    setText("statAlerts", dash.current_critical);
+    setText("statEntries", Object.values(tc).reduce((a, b) => a + b, 0));
+    setText("statLow", tc.Low || 0);
+    if (roadwise && roadwise.length) setText("statBusiest", roadwise[0].road_name);
+
+    // --- Hourly traffic chart ---
+    renderChart("hourlyChart", "hourly", "line",
+        hourly.map(d => d.hour + ":00"),
+        hourly.map(d => d.avg_vehicles),
+        "#f59e0b", "rgba(245,158,11,0.1)"
+    );
+
+    // --- Roadwise bar chart ---
+    const top = (roadwise || []).slice(0, 8);
+    const rwColors = top.map(d => {
+        var l = d.congestion_level || "Low";
+        return l === "Critical" ? "#ef4444" : l === "High" ? "#f97316" : l === "Medium" ? "#f59e0b" : "#22c55e";
+    });
+    renderBarChart("roadwiseChart", "roadwise",
+        top.map(d => d.road_name),
+        top.map(d => d.avg_vehicles || 0),
+        rwColors
+    );
+
+    // --- Trend chart ---
+    renderChart("trendChart", "trend", "line",
+        trend.map(d => new Date(d.date).toLocaleDateString("en-IN", { day: "2-digit", month: "short" })),
+        trend.map(d => d.avg_vehicles || 0),
+        "#22d3ee", "rgba(34,211,238,0.1)"
+    );
+
+    // --- Congestion doughnut ---
+    renderDoughnut("distChart", "dist",
+        ["Low", "Medium", "High", "Critical"],
+        ["#22c55e", "#f59e0b", "#f97316", "#ef4444"],
+        ["Low", "Medium", "High", "Critical"].map(l => tc[l] || 0)
+    );
+
+    // --- Heatmap ---
+    const grid = el("heatmapGrid");
+    if (grid) {
+        grid.innerHTML = "";
+        // Build a fake 24-hour intensity if no real heatmap data
+        const heatArr = heatmap && heatmap.length
+            ? heatmap
+            : DEMO_HOURLY.map(h => ({ hour: h.hour, avg_vehicles: h.avg_vehicles }));
+        const mx = Math.max(...heatArr.map(h => h.avg_vehicles), 1);
+        for (let h = 0; h < 24; h++) {
+            const cell = document.createElement("div");
+            cell.className = "heatmap-cell";
+            const val = (heatArr[h] || {}).avg_vehicles || 0;
+            const ratio = Math.min(val / mx, 1);
+            cell.style.background = ratio < 0.3
+                ? `rgba(34,197,94,${0.3 + ratio})`
+                : ratio < 0.6
+                    ? `rgba(245,158,11,${0.3 + ratio})`
+                    : ratio < 0.85
+                        ? `rgba(249,115,22,${0.4 + ratio * 0.5})`
+                        : `rgba(239,68,68,${0.5 + ratio * 0.4})`;
+            cell.title = `${h}:00 \u2014 ${val} vehicles`;
+            grid.appendChild(cell);
         }
+    }
 
-        renderChart(
-            "hourlyChart",
-            "hourly",
-            "line",
-            hourly.map(d => d.hour + ":00"),
-            hourly.map(d => d.avg_vehicles),
-            "#f59e0b",
-            "rgba(245,158,11,0.1)"
-        );
-
-    } catch (err) {
-        hideLoading();
-        showError("Dashboard API failed.");
+    // --- Live alerts list (in dashboard) ---
+    const ac = el("alertsList");
+    if (ac) {
+        if (!alerts || !alerts.length) {
+            ac.innerHTML = '<div class="empty-state" style="padding:24px"><span class="empty-icon">&#9989;</span><h3>All Clear</h3><p>No active congestion alerts</p></div>';
+        } else {
+            ac.innerHTML = alerts.slice(0, 6).map(a => {
+                const c = a.congestion_level === "Critical" ? "#ef4444" : "#f97316";
+                return `<div class="alert-row">
+                    <div class="alert-dot" style="background:${c}"></div>
+                    <div class="alert-road">${a.road_name}</div>
+                    <div class="alert-meta">${a.congestion_level} \u00B7 ${a.vehicle_count} vehicles</div>
+                </div>`;
+            }).join("");
+        }
     }
 }
 
@@ -529,9 +621,9 @@ async function submitTraffic(e) {
         if (res.ok) { showSuccess("Added! Level: " + data.congestion_level); saveRecentTraffic(road_id, vc, weather, data.congestion_level, date, hour); }
         else showError(data.error || "Failed to submit.");
     } catch (err) {
-    hideLoading();
-    showError("Backend connection failed. Traffic not saved.");
-}
+        hideLoading();
+        showError("Backend connection failed. Traffic not saved.");
+    }
     resetTrafficForm();
 }
 
@@ -586,10 +678,10 @@ async function loadAlertsPage() {
         if (!res.ok) throw 0;
         allAlertsData = await res.json();
     } catch (e) {
-    hideLoading();
-    showError("Failed to load alerts from backend.");
-    allAlertsData = [];
-}
+        hideLoading();
+        showError("Failed to load alerts from backend.");
+        allAlertsData = [];
+    }
     hideLoading(); renderAlertsPage(); renderAlertStats(); renderAlertChart();
 }
 
@@ -694,9 +786,9 @@ async function addNewRoad(e) {
         if (res.ok) { showSuccess("Road added!"); el("addRoadForm").reset(); loadRoadsPage(); }
         else showError(data.error || "Failed to add road.");
     } catch (err) {
-    hideLoading();
-    showError("Backend connection failed. Road not added.");
-}
+        hideLoading();
+        showError("Backend connection failed. Road not added.");
+    }
 }
 
 
@@ -720,9 +812,9 @@ async function runComparison() {
         var data = await res.json(); hideLoading();
         showCompareResult(data);
     } catch (err) {
-    hideLoading();
-    showError("Comparison API failed.");
-}
+        hideLoading();
+        showError("Comparison API failed.");
+    }
 }
 
 function showCompareResult(data) {
