@@ -4,9 +4,7 @@
 // ============================================================
 
 // --- CONFIG ---
-// BASE_URL is empty so all API calls are relative to the same server
-// Just open http://localhost:5000 in your browser
-var BASE_URL = "";
+var BASE_URL = "http://127.0.0.1:5000";
 
 var TRAFFIC_LEVELS = {
     Low: { color: "#22c55e", bg: "rgba(34,197,94,0.15)", border: "#22c55e" },
