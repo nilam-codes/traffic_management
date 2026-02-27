@@ -4,7 +4,7 @@
 // ============================================================
 
 // --- CONFIG ---
-var BASE_URL = "http://localhost:5000";
+var BASE_URL = "http://127.0.0.1:5000";
 
 var TRAFFIC_LEVELS = {
     Low: { color: "#22c55e", bg: "rgba(34,197,94,0.15)", border: "#22c55e" },
@@ -23,13 +23,6 @@ var NAV_ITEMS = [
     { id: "compare", label: "Compare", icon: "\u2696\uFE0F" }
 ];
 
-var DEMO_ROADS = [
-    { id: 1, road_name: "MG Road", area: "Central", city: "Bangalore", capacity: 1200, vehicle_count: 950, congestion_level: "High" },
-    { id: 2, road_name: "Ring Road", area: "Outer Ring", city: "Bangalore", capacity: 1500, vehicle_count: 680, congestion_level: "Medium" },
-    { id: 3, road_name: "NH-44", area: "Highway", city: "Bangalore", capacity: 1800, vehicle_count: 1650, congestion_level: "Critical" },
-    { id: 4, road_name: "Residency Road", area: "CBD", city: "Bangalore", capacity: 1000, vehicle_count: 320, congestion_level: "Low" },
-    { id: 5, road_name: "Whitefield Road", area: "East", city: "Bangalore", capacity: 1000, vehicle_count: 780, congestion_level: "High" }
-];
 
 // --- COMMON HELPERS ---
 function getCurrentCity() { return localStorage.getItem("city") || "All Cities"; }
@@ -63,12 +56,6 @@ function showError(m) { showToast(m, "error"); }
 function showSuccess(m) { showToast(m, "success"); }
 function showWarning(m) { showToast(m, "warning"); }
 
-function showDemoMessage() {
-    if (el("demoBanner")) return;
-    var b = document.createElement("div"); b.id = "demoBanner"; b.className = "demo-banner";
-    b.innerHTML = '<span>\u26A1 Backend offline \u2014 showing demo data</span><button onclick="this.parentElement.remove()">\u00D7</button>';
-    document.body.appendChild(b);
-}
 
 function formatDateTime(str) {
     if (!str) return "\u2014";
@@ -254,8 +241,14 @@ function startApp() {
 
 // --- FETCH ROADS (shared helper) ---
 async function fetchRoads() {
-    try { var res = await fetch(BASE_URL + "/roads"); if (!res.ok) throw 0; return await res.json(); }
-    catch (e) { return DEMO_ROADS; }
+    try {
+        const res = await fetch(BASE_URL + "/roads");
+        if (!res.ok) throw new Error("Failed to fetch roads");
+        return await res.json();
+    } catch (e) {
+        showError("Unable to load roads from backend.");
+        return [];
+    }
 }
 
 function fillRoadSelect(selId, roads) {
@@ -267,70 +260,44 @@ function fillRoadSelect(selId, roads) {
 // ================================================================
 //  DASHBOARD
 // ================================================================
-function initDashboard() { loadDashboard(); }
-
 async function loadDashboard() {
     showLoading("Loading dashboard...");
-    var results = await Promise.allSettled([
-        fetchJSON("/analytics/dashboard"), fetchJSON("/analytics/roadwise"),
-        fetchJSON("/analytics/hourly"), fetchJSON("/analytics/trend"),
-        fetchJSON("/analytics/heatmap"), fetchJSON("/analytics/alerts")
-    ]);
-    hideLoading();
-    var DEMOS = [
-        { total_roads: 12, current_critical: 3, peak_hour: "9:00", today_counts: { Low: 18, Medium: 12, High: 6, Critical: 3 } },
-        DEMO_ROADS.map(function (r) { return { road_name: r.road_name, area: r.area, avg_vehicles: r.vehicle_count, usage_percent: Math.round(r.vehicle_count / r.capacity * 100), capacity: r.capacity, congestion_level: r.congestion_level }; }),
-        Array.from({ length: 24 }, function (_, i) { return { hour: i, avg_vehicles: Math.round(200 + 600 * Math.pow(Math.sin(Math.PI * (i - 6) / 12), 2) * (i >= 6 && i <= 22 ? 1 : 0.2)) }; }),
-        Array.from({ length: 14 }, function (_, i) { return { date: new Date(Date.now() - (13 - i) * 864e5).toISOString().split("T")[0], avg_vehicles: Math.round(400 + Math.random() * 400) }; }),
-        [],
-        [{ id: 1, road_name: "MG Road", area: "Central", city: "Bangalore", vehicle_count: 1100, congestion_level: "Critical", weather: "Clear", recorded_at: new Date().toISOString(), capacity: 1200, suggestion: "Deploy traffic police!" }]
-    ];
-    var d = results.map(function (r, i) { if (r.status === "fulfilled" && r.value) return r.value; showDemoMessage(); return DEMOS[i]; });
-    var dash = d[0], roadwise = d[1], hourly = d[2], trend = d[3], heatmap = d[4], alerts = d[5];
 
-    setText("statRoads", dash.total_roads);
-    setText("statPeakHour", dash.peak_hour || "\u2014");
-    setText("statAlerts", dash.current_critical);
-    var tc = dash.today_counts || {};
-    setText("statEntries", Object.values(tc).reduce(function (a, b) { return a + b; }, 0));
-    setText("statLow", tc.Low || 0);
-    if (roadwise && roadwise.length) setText("statBusiest", roadwise[0].road_name);
+    try {
+        const dash = await fetchJSON("/analytics/dashboard");
+        const roadwise = await fetchJSON("/analytics/roadwise");
+        const hourly = await fetchJSON("/analytics/hourly");
+        const trend = await fetchJSON("/analytics/trend");
+        const heatmap = await fetchJSON("/analytics/heatmap");
+        const alerts = await fetchJSON("/analytics/alerts");
 
-    // Charts
-    renderChart("hourlyChart", "hourly", "line", hourly.map(function (d) { return d.hour + ":00"; }), hourly.map(function (d) { return d.avg_vehicles; }), "#f59e0b", "rgba(245,158,11,0.1)");
-    var top = roadwise.slice(0, 8);
-    var rwColors = top.map(function (d) { var l = d.congestion_level || "Low"; return l === "Critical" ? "#ef4444" : l === "High" ? "#f97316" : l === "Medium" ? "#f59e0b" : "#22c55e"; });
-    renderBarChart("roadwiseChart", "roadwise", top.map(function (d) { return d.road_name; }), top.map(function (d) { return d.avg_vehicles || 0; }), rwColors);
-    renderChart("trendChart", "trend", "line", trend.map(function (d) { return new Date(d.date).toLocaleDateString("en-IN", { day: "2-digit", month: "short" }); }), trend.map(function (d) { return d.avg_vehicles || 0; }), "#22d3ee", "rgba(34,211,238,0.1)");
-    renderDoughnut("distChart", "dist", ["Low", "Medium", "High", "Critical"], ["#22c55e", "#f59e0b", "#f97316", "#ef4444"], ["Low", "Medium", "High", "Critical"].map(function (l) { return tc[l] || 0; }));
+        hideLoading();
 
-    // Heatmap
-    var grid = el("heatmapGrid");
-    if (grid) {
-        grid.innerHTML = "";
-        var mx = 1;
-        (heatmap || []).forEach(function (d) { if (d.avg_vehicles > mx) mx = d.avg_vehicles; });
-        for (var h = 0; h < 24; h++) {
-            var cell = document.createElement("div"); cell.className = "heatmap-cell";
-            var val = (heatmap && heatmap[h]) ? heatmap[h].avg_vehicles : Math.round(Math.random() * mx * 0.6);
-            var ratio = Math.min(val / Math.max(mx, 1), 1);
-            cell.style.background = ratio < 0.3 ? "rgba(34,197,94," + (0.3 + ratio) + ")" : ratio < 0.6 ? "rgba(245,158,11," + (0.3 + ratio) + ")" : ratio < 0.8 ? "rgba(249,115,22," + (0.4 + ratio * 0.5) + ")" : "rgba(239,68,68," + (0.5 + ratio * 0.4) + ")";
-            cell.title = h + ":00 \u2014 " + val + " vehicles";
-            grid.appendChild(cell);
+        setText("statRoads", dash.total_roads);
+        setText("statPeakHour", dash.peak_hour || "—");
+        setText("statAlerts", dash.current_critical);
+
+        const tc = dash.today_counts || {};
+        setText("statEntries", Object.values(tc).reduce((a,b)=>a+b,0));
+        setText("statLow", tc.Low || 0);
+
+        if (roadwise && roadwise.length) {
+            setText("statBusiest", roadwise[0].road_name);
         }
-    }
 
-    // Dashboard alerts
-    var ac = el("alertsList");
-    if (ac) {
-        if (!alerts || !alerts.length) {
-            ac.innerHTML = '<div class="empty-state" style="padding:30px"><span class="empty-icon">&#9888;</span><h3>No Active Alerts</h3><p>All roads running smoothly</p></div>';
-        } else {
-            ac.innerHTML = alerts.slice(0, 6).map(function (a) {
-                var c = a.congestion_level === "Critical" ? "#ef4444" : "#f97316";
-                return '<div class="alert-row"><div class="alert-dot" style="background:' + c + '"></div><div class="alert-road">' + a.road_name + '</div><div class="alert-meta">' + a.congestion_level + ' \u00B7 ' + a.vehicle_count + ' vehicles</div></div>';
-            }).join("");
-        }
+        renderChart(
+            "hourlyChart",
+            "hourly",
+            "line",
+            hourly.map(d => d.hour + ":00"),
+            hourly.map(d => d.avg_vehicles),
+            "#f59e0b",
+            "rgba(245,158,11,0.1)"
+        );
+
+    } catch (err) {
+        hideLoading();
+        showError("Dashboard API failed.");
     }
 }
 
@@ -360,24 +327,34 @@ async function initPredict() {
 
 async function runPrediction(e) {
     e.preventDefault();
-    var road_id = el("predRoad").value, hour = el("predHour").value, weather = el("predWeather").value || "Clear", is_holiday = el("predHoliday").checked ? 1 : 0;
+
+    const road_id = el("predRoad").value;
+    const hour = el("predHour").value;
+    const weather = el("predWeather").value || "Clear";
+    const is_holiday = el("predHoliday").checked ? 1 : 0;
+
     if (!road_id) return showError("Select a road.");
-    if (!hour && hour !== "0") return showError("Select an hour.");
+    if (hour === "") return showError("Select an hour.");
+
     showLoading("Running ML prediction...");
+
     try {
-        var res = await fetch(BASE_URL + "/predict/" + road_id + "?hour=" + hour + "&weather=" + weather + "&is_holiday=" + is_holiday);
-        if (!res.ok) throw 0;
-        var data = await res.json(); hideLoading();
+        const res = await fetch(
+            BASE_URL + "/predict/" + road_id +
+            "?hour=" + hour +
+            "&weather=" + weather +
+            "&is_holiday=" + is_holiday
+        );
+
+        if (!res.ok) throw new Error();
+
+        const data = await res.json();
+        hideLoading();
         showPredResult(data);
+
     } catch (err) {
-        hideLoading(); showDemoMessage();
-        var sc = 40, h = parseInt(hour);
-        if (h >= 8 && h <= 10) sc += 35; else if (h >= 17 && h <= 19) sc += 30;
-        if (weather === "Rain") sc += 20; if (is_holiday) sc -= 15;
-        sc = Math.max(10, Math.min(95, sc + Math.round(Math.random() * 10 - 5)));
-        var lv = sc >= 80 ? "Critical" : sc >= 60 ? "High" : sc >= 35 ? "Medium" : "Low";
-        var sugs = { Low: "Traffic flowing smoothly.", Medium: "Moderate congestion. Consider alternate routes.", High: "Heavy traffic! Use public transport.", Critical: "Emergency! Deploy traffic police!" };
-        showPredResult({ road_id: road_id, road_name: "Road #" + road_id, hour: h + ":00", weather: weather, is_holiday: !!is_holiday, predicted_level: lv, confidence: Math.round(60 + Math.random() * 25), suggestion: sugs[lv], note: "Demo prediction" });
+        hideLoading();
+        showError("Prediction API failed.");
     }
 }
 
@@ -438,50 +415,81 @@ async function initHistory() {
 
 async function loadHistoryData() {
     showLoading("Fetching history...");
-    var rid = el("filterRoad") ? el("filterRoad").value : "";
-    var dt = el("filterDate") ? el("filterDate").value : "";
-    var lv = el("filterLevel") ? el("filterLevel").value : "";
-    var params = new URLSearchParams();
+
+    const rid = el("filterRoad") ? el("filterRoad").value : "";
+    const dt = el("filterDate") ? el("filterDate").value : "";
+    const lv = el("filterLevel") ? el("filterLevel").value : "";
+
+    const params = new URLSearchParams();
     if (rid) params.set("road_id", rid);
     if (dt) params.set("date", dt);
     if (lv) params.set("level", lv);
+
     try {
-        var res = await fetch(BASE_URL + "/traffic/history?" + params);
-        if (!res.ok) throw 0;
+        const res = await fetch(BASE_URL + "/traffic/history?" + params);
+        if (!res.ok) throw new Error();
         historyData = await res.json();
     } catch (e) {
-        showDemoMessage();
-        historyData = Array.from({ length: 25 }, function (_, i) {
-            var levels = ["Low", "Medium", "High", "Critical"];
-            var names = ["MG Road", "Ring Road", "NH-44", "Residency Road", "Whitefield Rd"];
-            return { id: i + 1, road_id: (i % 5) + 1, road_name: names[i % 5], area: ["Central", "Outer", "Highway", "CBD", "East"][i % 5], city: "Bangalore", vehicle_count: Math.round(200 + Math.random() * 1200), congestion_level: levels[Math.floor(Math.random() * 4)], weather: ["Clear", "Rain", "Fog"][Math.floor(Math.random() * 3)], is_holiday: i % 7 === 0 ? 1 : 0, recorded_at: new Date(Date.now() - i * 3600000).toISOString() };
-        });
+        showError("History API failed.");
+        historyData = [];
     }
+
     hideLoading();
-    // Table
-    var tb = el("historyBody");
+
+    const tb = el("historyBody");
     if (tb) {
         if (!historyData.length) {
-            tb.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--text-dim);padding:40px">No records found</td></tr>';
+            tb.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px">No records found</td></tr>';
         } else {
-            tb.innerHTML = historyData.map(function (r) {
-                var lc = r.congestion_level === "Critical" ? "#ef4444" : r.congestion_level === "High" ? "#f97316" : r.congestion_level === "Medium" ? "#f59e0b" : "#22c55e";
-                return '<tr><td>' + r.road_name + '</td><td class="mono">' + formatDateTime(r.recorded_at) + '</td><td class="mono">' + r.vehicle_count + '</td><td><span class="badge" style="background:' + lc + '20;color:' + lc + '">' + r.congestion_level + '</span></td><td class="mono">' + (r.weather || "Clear") + '</td><td class="mono">' + (r.is_holiday ? "Yes" : "No") + '</td><td class="mono">' + (r.area || "") + '</td></tr>';
-            }).join("");
+            tb.innerHTML = historyData.map(r =>
+                `<tr>
+                    <td>${r.road_name}</td>
+                    <td>${formatDateTime(r.recorded_at)}</td>
+                    <td>${r.vehicle_count}</td>
+                    <td>${r.congestion_level}</td>
+                    <td>${r.weather}</td>
+                    <td>${r.is_holiday ? "Yes" : "No"}</td>
+                    <td>${r.area || ""}</td>
+                </tr>`
+            ).join("");
         }
     }
-    // Stats
+
+    // ✅ Stats
     setText("histTotal", historyData.length);
-    setText("histCritical", historyData.filter(function (d) { return d.congestion_level === "Critical"; }).length);
-    setText("histAvg", historyData.length ? Math.round(historyData.reduce(function (s, d) { return s + (d.vehicle_count || 0); }, 0) / historyData.length) : 0);
-    setText("histHigh", historyData.filter(function (d) { return d.congestion_level === "High" || d.congestion_level === "Critical"; }).length);
-    // Trend chart
-    var grouped = {};
-    historyData.forEach(function (d) { var dt = (d.recorded_at || "").split("T")[0]; if (!grouped[dt]) grouped[dt] = []; grouped[dt].push(d.vehicle_count || 0); });
-    var dates = Object.keys(grouped).sort();
-    var avgs = dates.map(function (d) { return Math.round(grouped[d].reduce(function (a, b) { return a + b; }, 0) / grouped[d].length); });
-    renderChart("historyChart", "histTrend", "line", dates.map(function (d) { return new Date(d).toLocaleDateString("en-IN", { day: "2-digit", month: "short" }); }), avgs, "#22d3ee", "rgba(34,211,238,0.08)");
+    setText("histCritical", historyData.filter(d => d.congestion_level === "Critical").length);
+    setText("histHigh", historyData.filter(d => d.congestion_level === "High" || d.congestion_level === "Critical").length);
+
+    const avg = historyData.length
+        ? Math.round(historyData.reduce((s, d) => s + (d.vehicle_count || 0), 0) / historyData.length)
+        : 0;
+
+    setText("histAvg", avg);
+
+    // ✅ Trend chart
+    const grouped = {};
+    historyData.forEach(d => {
+        const dt = (d.recorded_at || "").split("T")[0];
+        if (!grouped[dt]) grouped[dt] = [];
+        grouped[dt].push(d.vehicle_count || 0);
+    });
+
+    const dates = Object.keys(grouped).sort();
+    const avgs = dates.map(d =>
+        Math.round(grouped[d].reduce((a, b) => a + b, 0) / grouped[d].length)
+    );
+
+    renderChart(
+        "historyChart",
+        "histTrend",
+        "line",
+        dates.map(d => new Date(d).toLocaleDateString("en-IN", { day: "2-digit", month: "short" })),
+        avgs,
+        "#22d3ee",
+        "rgba(34,211,238,0.08)"
+    );
 }
+
 
 function exportHistoryCSV() {
     if (!historyData.length) return showWarning("No data to export.");
@@ -521,11 +529,9 @@ async function submitTraffic(e) {
         if (res.ok) { showSuccess("Added! Level: " + data.congestion_level); saveRecentTraffic(road_id, vc, weather, data.congestion_level, date, hour); }
         else showError(data.error || "Failed to submit.");
     } catch (err) {
-        hideLoading(); showDemoMessage();
-        var lv = vc > 900 ? "Critical" : vc > 700 ? "High" : vc > 400 ? "Medium" : "Low";
-        saveRecentTraffic(road_id, vc, weather, lv, date, hour);
-        showSuccess("Recorded (demo). Level: " + lv);
-    }
+    hideLoading();
+    showError("Backend connection failed. Traffic not saved.");
+}
     resetTrafficForm();
 }
 
@@ -580,14 +586,10 @@ async function loadAlertsPage() {
         if (!res.ok) throw 0;
         allAlertsData = await res.json();
     } catch (e) {
-        showDemoMessage();
-        allAlertsData = [
-            { id: 1, road_name: "MG Road", area: "Central", city: "Bangalore", vehicle_count: 1100, congestion_level: "Critical", weather: "Clear", recorded_at: new Date().toISOString(), capacity: 1200, suggestion: "Deploy traffic police!" },
-            { id: 2, road_name: "NH-44", area: "Highway", city: "Bangalore", vehicle_count: 1650, congestion_level: "Critical", weather: "Rain", recorded_at: new Date(Date.now() - 3600000).toISOString(), capacity: 1800, suggestion: "Use alternate routes." },
-            { id: 3, road_name: "Whitefield Rd", area: "East", city: "Bangalore", vehicle_count: 820, congestion_level: "High", weather: "Clear", recorded_at: new Date(Date.now() - 7200000).toISOString(), capacity: 1000, suggestion: "Consider public transport." },
-            { id: 4, road_name: "Silk Board", area: "South", city: "Bangalore", vehicle_count: 950, congestion_level: "High", weather: "Fog", recorded_at: new Date(Date.now() - 10800000).toISOString(), capacity: 1100, suggestion: "Delays expected." }
-        ];
-    }
+    hideLoading();
+    showError("Failed to load alerts from backend.");
+    allAlertsData = [];
+}
     hideLoading(); renderAlertsPage(); renderAlertStats(); renderAlertChart();
 }
 
@@ -641,8 +643,19 @@ async function initRoads() {
 
 async function loadRoadsPage() {
     showLoading("Loading roads...");
-    try { var res = await fetch(BASE_URL + "/roads"); if (!res.ok) throw 0; allRoadsData = await res.json(); }
-    catch (e) { showDemoMessage(); allRoadsData = DEMO_ROADS; }
+
+    try {
+        const res = await fetch(BASE_URL + "/roads");
+        if (!res.ok) throw new Error();
+
+        allRoadsData = await res.json();
+
+    } catch (e) {
+        hideLoading();
+        showError("Failed to load roads.");
+        allRoadsData = [];
+    }
+
     hideLoading();
     renderRoadsList(allRoadsData);
     updateRoadStats(allRoadsData);
@@ -681,11 +694,9 @@ async function addNewRoad(e) {
         if (res.ok) { showSuccess("Road added!"); el("addRoadForm").reset(); loadRoadsPage(); }
         else showError(data.error || "Failed to add road.");
     } catch (err) {
-        hideLoading(); showDemoMessage();
-        allRoadsData.unshift({ id: Date.now(), road_name: nm, area: area, city: city, capacity: cap });
-        renderRoadsList(allRoadsData); updateRoadStats(allRoadsData);
-        showSuccess("Road added (demo)."); el("addRoadForm").reset();
-    }
+    hideLoading();
+    showError("Backend connection failed. Road not added.");
+}
 }
 
 
@@ -709,13 +720,9 @@ async function runComparison() {
         var data = await res.json(); hideLoading();
         showCompareResult(data);
     } catch (err) {
-        hideLoading(); showDemoMessage();
-        var mk = function () { return Array.from({ length: 24 }, function (_, h) { return { hour: h, avg_vehicles: Math.round(200 + 600 * Math.pow(Math.sin(Math.PI * (h - 6) / 12), 2) * (h >= 6 && h <= 22 ? 1 : 0.2) + Math.random() * 100) }; }); };
-        showCompareResult({
-            road1: { road: { id: 1, road_name: "MG Road", area: "Central", capacity: 1200 }, hourly: mk(), stats: { avg_vehicles: 780, max_vehicles: 1180, min_vehicles: 120, total_records: 156 } },
-            road2: { road: { id: 2, road_name: "Ring Road", area: "Outer", capacity: 1500 }, hourly: mk(), stats: { avg_vehicles: 620, max_vehicles: 1350, min_vehicles: 80, total_records: 142 } }
-        });
-    }
+    hideLoading();
+    showError("Comparison API failed.");
+}
 }
 
 function showCompareResult(data) {
